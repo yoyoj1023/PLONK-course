@@ -1,201 +1,201 @@
-# 第五模組：效能渦輪 - 使用查找表 (Lookup Arguments)
+# Module 5: Performance Turbo - Using Lookup Tables (Lookup Arguments)
 
-## 模組目標
-學習 PLONK 的一項關鍵優化，以極低成本處理複雜運算。
+## Module Objective
+Learn a key optimization of PLONK to handle complex operations at extremely low cost.
 
-## 心智模型
-與其在電路裡費力計算 `sin(x)`，不如直接查一本預先計算好的「三角函數表」。
-
----
-
-## 第一課：SNARK-unfriendly 運算的挑戰
-
-### 1.1 什麼是 SNARK-unfriendly？
-
-某些運算在傳統電路中極其昂貴：
-
-**範圍檢查 (Range Check)**：
-- 問題：驗證 x 是否在 [0, 2^16) 範圍內
-- 天真方法：分解為 16 個二進制位，需要 16 個布爾約束
-- 成本：每個範圍檢查需要 16 個門
-
-**位元運算 (Bitwise Operations)**：
-- 問題：計算 a AND b, a XOR b 等
-- 天真方法：分解為位元級運算
-- 成本：32位操作需要 32 個門
-
-**除法運算**：
-- 問題：計算 a / b（整數除法）
-- 天真方法：使用乘法和範圍檢查
-- 成本：非常高，需要多輪交互
-
-### 1.2 成本分析
-
-假設一個簡單的範圍檢查：
-
-```
-傳統方法：
-- 分解 x = b₀ + 2b₁ + 4b₂ + ... + 2^15·b₁₅
-- 每個 bᵢ 需要布爾約束：bᵢ(bᵢ-1) = 0
-- 總計：16 個門 + 額外的加法門
-```
-
-**問題**：對於複雜應用（如 zkEVM），這樣的成本無法承受。
-
-### 1.3 查找表的直觀想法
-
-**新思路**：預先計算一張「有效值表」，證明用到的值都在表中。
-
-```
-範圍表 T = [0, 1, 2, 3, ..., 65535]
-查找值 L = [x₁, x₂, x₃, ...]
-
-證明：L 中的每個值都出現在 T 中
-```
+## Mental Model
+Instead of laboriously computing `sin(x)` in the circuit, why not directly look up a pre-computed "trigonometric function table."
 
 ---
 
-## 第二課：Plookup 協議的直覺
+## Lesson 1: Challenges of SNARK-unfriendly Operations
 
-### 2.1 核心想法
+### 1.1 What is SNARK-unfriendly?
 
-**Plookup 聲明**：「我在計算中用到的這些值，都可以在預先定義的表格中找到」
+Certain operations are extremely expensive in traditional circuits:
 
-**數學表述**：
-- 表格 T = [t₁, t₂, ..., tₙ]
-- 查找值 L = [l₁, l₂, ..., lₘ]  
-- 目標：證明 L ⊆ T（L 是 T 的子集）
+**Range Checks**:
+- Problem: Verify if x is in range [0, 2^16)
+- Naive method: Decompose into 16 binary bits, requires 16 boolean constraints
+- Cost: Each range check needs 16 gates
 
-### 2.2 子集檢查的挑戰
+**Bitwise Operations**:
+- Problem: Compute a AND b, a XOR b, etc.
+- Naive method: Decompose to bit-level operations
+- Cost: 32-bit operations need 32 gates
 
-**天真方法**：為每個 lᵢ，找到對應的 tⱼ 使得 lᵢ = tⱼ
-- 問題：需要 m×n 次比較
-- 複雜度：O(mn)
+**Division Operations**:
+- Problem: Compute a / b (integer division)
+- Naive method: Use multiplication and range checks
+- Cost: Very high, requires multiple rounds of interaction
 
-**更好的方法**：使用置換參數的技巧！
+### 1.2 Cost Analysis
 
-### 2.3 置換參數的推廣
+Consider a simple range check:
 
-**核心洞察**：子集關係可以轉化為置換關係
+```
+Traditional method:
+- Decompose x = b₀ + 2b₁ + 4b₂ + ... + 2^15·b₁₅
+- Each bᵢ needs boolean constraint: bᵢ(bᵢ-1) = 0
+- Total: 16 gates + additional addition gates
+```
 
-如果 L ⊆ T，那麼存在一個「擴展的 L」，使得它是 T 的置換。
+**Problem**: For complex applications (like zkEVM), such costs are unbearable.
 
-**構造方法**：
+### 1.3 Intuitive Idea of Lookup Tables
+
+**New Approach**: Pre-compute a "valid values table," prove that used values are all in the table.
+
+```
+Range table T = [0, 1, 2, 3, ..., 65535]
+Lookup values L = [x₁, x₂, x₃, ...]
+
+Prove: Each value in L appears in T
+```
+
+---
+
+## Lesson 2: Plookup Protocol Intuition
+
+### 2.1 Core Idea
+
+**Plookup Claim**: "The values I used in my computation can all be found in a predefined table"
+
+**Mathematical Statement**:
+- Table T = [t₁, t₂, ..., tₙ]
+- Lookup values L = [l₁, l₂, ..., lₘ]  
+- Goal: Prove L ⊆ T (L is a subset of T)
+
+### 2.2 Challenge of Subset Checking
+
+**Naive Method**: For each lᵢ, find corresponding tⱼ such that lᵢ = tⱼ
+- Problem: Requires m×n comparisons
+- Complexity: O(mn)
+
+**Better Method**: Use permutation argument techniques!
+
+### 2.3 Extension of Permutation Arguments
+
+**Core Insight**: Subset relationships can be transformed into permutation relationships
+
+If L ⊆ T, then there exists an "extended L" that is a permutation of T.
+
+**Construction Method**:
 ```
 T = [1, 2, 3, 4, 5]
 L = [2, 4, 2]
-擴展的 L' = [2, 4, 2, 1, 3, 5] （添加 T 中未被查找的元素）
+Extended L' = [2, 4, 2, 1, 3, 5] (add elements from T not looked up)
 ```
 
-現在 L' 是 T 的置換！
+Now L' is a permutation of T!
 
 ---
 
-## 第三課：Plookup 的工作原理
+## Lesson 3: How Plookup Works
 
-### 3.1 算法步驟
+### 3.1 Algorithm Steps
 
-**步驟1**：排序
-- 對 T 和 L 分別排序：T_sorted, L_sorted
-- 如果 L ⊆ T，那麼 L_sorted 可以「合併」進 T_sorted
+**Step 1**: Sorting
+- Sort T and L separately: T_sorted, L_sorted
+- If L ⊆ T, then L_sorted can be "merged" into T_sorted
 
-**步驟2**：合併檢查
-- 構造合併序列 F
-- F 應該包含 T_sorted 的所有元素，加上 L_sorted 的所有元素
-- F 的長度 = |T| + |L|
+**Step 2**: Merge Check
+- Construct merged sequence F
+- F should contain all elements of T_sorted, plus all elements of L_sorted
+- Length of F = |T| + |L|
 
-**步驟3**：一致性驗證
-- 驗證 F 是 T_sorted 和 L_sorted 的正確合併
-- 使用置換參數技術
+**Step 3**: Consistency Verification
+- Verify F is correct merge of T_sorted and L_sorted
+- Use permutation argument techniques
 
-### 3.2 詳細例子
+### 3.2 Detailed Example
 
-**表格**：T = [5, 1, 3, 2, 4]
-**查找**：L = [2, 5, 1]
+**Table**: T = [5, 1, 3, 2, 4]
+**Lookup**: L = [2, 5, 1]
 
-**排序**：
+**Sorting**:
 - T_sorted = [1, 2, 3, 4, 5]  
 - L_sorted = [1, 2, 5]
 
-**合併**：
+**Merging**:
 - F = [1, 1, 2, 2, 3, 4, 5, 5]
-- 每個表格元素出現一次，每個查找元素額外出現一次
+- Each table element appears once, each lookup element appears additionally once
 
-### 3.3 合併的驗證
+### 3.3 Merge Verification
 
-**一致性檢查**：
-1. F 的前 |L| 個元素應該是 L_sorted 的置換
-2. F 的後 |T| 個元素應該是 T_sorted 的置換  
-3. F 是非遞減序列
+**Consistency Checks**:
+1. First |L| elements of F should be a permutation of L_sorted
+2. Last |T| elements of F should be a permutation of T_sorted  
+3. F is a non-decreasing sequence
 
-這可以用多項式約束來表達！
+This can be expressed with polynomial constraints!
 
 ---
 
-## 第四課：多項式實現
+## Lesson 4: Polynomial Implementation
 
-### 4.1 多項式表示
+### 4.1 Polynomial Representation
 
-將序列轉化為多項式：
-- F(X)：插值合併序列
-- T_sorted(X)：插值排序表格
-- L_sorted(X)：插值排序查找值
+Transform sequences into polynomials:
+- F(X): interpolates merged sequence
+- T_sorted(X): interpolates sorted table
+- L_sorted(X): interpolates sorted lookup values
 
-### 4.2 差分約束
+### 4.2 Difference Constraints
 
-**非遞減檢查**：
-對於相鄰元素，F(ωⁱ⁺¹) - F(ωⁱ) ≥ 0
+**Non-decreasing Check**:
+For adjacent elements, F(ωⁱ⁺¹) - F(ωⁱ) ≥ 0
 
-**多項式約束**：
+**Polynomial Constraint**:
 ```
 (F(ωX) - F(X)) × (F(ωX) - F(X) - 1) = 0
 ```
 
-這確保了差值要麼是 0（相等），要麼是 1（遞增 1）。
+This ensures the difference is either 0 (equal) or 1 (increment by 1).
 
-### 4.3 置換約束
+### 4.3 Permutation Constraints
 
-使用類似 PLONK 的置換參數：
-- 驗證 F 的前半部分是 L_sorted 的置換
-- 驗證 F 的後半部分是 T_sorted 的置換
+Use PLONK-like permutation arguments:
+- Verify first half of F is a permutation of L_sorted
+- Verify second half of F is a permutation of T_sorted
 
-### 4.4 隨機線性組合
+### 4.4 Random Linear Combination
 
-使用隨機挑戰 γ：
+Use random challenge γ:
 ```
 F'(X) = F(X) + γ
 T'(X) = T_sorted(X) + γ  
 L'(X) = L_sorted(X) + γ
 ```
 
-然後檢查積的相等性。
+Then check product equality.
 
 ---
 
-## 第五課：高效的表格設計
+## Lesson 5: Efficient Table Design
 
-### 5.1 預計算表格
+### 5.1 Precomputed Tables
 
-**範圍表格**：
+**Range Tables**:
 ```
 T_range = [0, 1, 2, ..., 2^k - 1]
 ```
 
-**位元運算表格**：
+**Bitwise Operation Tables**:
 ```
 T_and = [(a, b, a AND b) for a, b in [0, 2^k)]
 T_xor = [(a, b, a XOR b) for a, b in [0, 2^k)]
 ```
 
-**算術表格**：
+**Arithmetic Tables**:
 ```
 T_sqrt = [(x, √x) for x in perfect_squares]
 T_log = [(x, log₂(x)) for x in powers_of_2]
 ```
 
-### 5.2 多維表格
+### 5.2 Multi-dimensional Tables
 
-對於複雜運算，可以使用多列表格：
+For complex operations, use multi-column tables:
 
 ```
 ADD_table = [
@@ -204,106 +204,106 @@ ADD_table = [
 ]
 ```
 
-查找 (a, b, c) 證明 c = a + b。
+Look up (a, b, c) to prove c = a + b.
 
-### 5.3 表格壓縮技巧
+### 5.3 Table Compression Techniques
 
-**稀疏表格**：只包含「有趣」的值
-**分層表格**：大表格分解為小表格的組合
-**共享表格**：多個電路共用相同的表格
-
----
-
-## 第六課：實際應用場景
-
-### 6.1 zkEVM 中的應用
-
-**EVM 操作碼**：
-- ADD, SUB, MUL：使用算術表格
-- AND, OR, XOR：使用位元運算表格  
-- LT, GT：使用比較表格
-
-**內存訪問**：
-- 地址範圍檢查
-- 值的有效性檢查
-
-### 6.2 隱私計算
-
-**範圍證明**：
-- 年齡在 [18, 65] 之間
-- 收入在合理範圍內
-
-**格式驗證**：
-- 電子郵件格式
-- 身份證號格式
-
-### 6.3 DeFi 應用
-
-**價格預言機**：
-- 價格在合理範圍內
-- 時間戳的有效性
-
-**風險模型**：
-- 抵押率計算
-- 清算閾值檢查
+**Sparse Tables**: Only include "interesting" values
+**Layered Tables**: Large tables decomposed into combinations of small tables
+**Shared Tables**: Multiple circuits share the same tables
 
 ---
 
-## 第七課：性能分析
+## Lesson 6: Real-world Application Scenarios
 
-### 7.1 成本對比
+### 6.1 Applications in zkEVM
 
-**傳統方法 vs Lookup**：
+**EVM Opcodes**:
+- ADD, SUB, MUL: Use arithmetic tables
+- AND, OR, XOR: Use bitwise operation tables  
+- LT, GT: Use comparison tables
 
-| 運算 | 傳統門數 | Lookup 成本 | 改進倍數 |
-|------|----------|-------------|----------|
-| 16位範圍檢查 | 16 | 1 | 16x |
-| 32位 AND | 32 | 1 | 32x |
-| 除法 | ~100 | 1 | 100x |
+**Memory Access**:
+- Address range checking
+- Value validity checking
 
-### 7.2 表格大小的權衡
+### 6.2 Privacy Computing
 
-**表格越大**：
-- 支持更多運算
-- 可信設置成本增加
-- 內存需求增加
+**Range Proofs**:
+- Age between [18, 65]
+- Income within reasonable range
 
-**表格越小**：
-- 運算範圍受限
-- 可能需要多次查找
+**Format Validation**:
+- Email format
+- ID number format
 
-### 7.3 實際性能數據
+### 6.3 DeFi Applications
 
-在現代硬件上：
-- 表格預計算：一次性成本
-- 查找證明生成：亞線性增長
-- 驗證時間：常數級
+**Price Oracles**:
+- Prices within reasonable range
+- Timestamp validity
+
+**Risk Models**:
+- Collateral ratio calculation
+- Liquidation threshold checking
 
 ---
 
-## 模組總結
+## Lesson 7: Performance Analysis
 
-通過本模組，我們學習了：
+### 7.1 Cost Comparison
 
-1. **SNARK-unfriendly 運算**的性能瓶頸
-2. **Plookup 協議**的核心思想和實現
-3. **表格設計**的策略和技巧
-4. **實際應用**場景和性能優勢
+**Traditional Method vs Lookup**:
 
-### 核心洞察
+| Operation | Traditional Gates | Lookup Cost | Improvement |
+|-----------|-------------------|-------------|-------------|
+| 16-bit range check | 16 | 1 | 16x |
+| 32-bit AND | 32 | 1 | 32x |
+| Division | ~100 | 1 | 100x |
 
-- 查找表將複雜運算的成本從 O(k) 降至 O(1)
-- 預計算的表格可以在多個證明間重用
-- 正確的表格設計是系統性能的關鍵
+### 7.2 Table Size Trade-offs
 
-## 自我檢驗
+**Larger Tables**:
+- Support more operations
+- Increased trusted setup cost
+- Increased memory requirements
 
-在進入下一模組前，請確認您能夠：
-- [ ] 解釋什麼運算是 SNARK-unfriendly 的
-- [ ] 理解 Plookup 的核心思想
-- [ ] 設計簡單的查找表格
-- [ ] 分析查找表帶來的性能提升
+**Smaller Tables**:
+- Limited operation range
+- May require multiple lookups
 
-## 下一步
+### 7.3 Real Performance Data
 
-PLONK 的模塊化設計讓我們可以替換不同的組件。讓我們學習如何將 PLONK 與不同的多項式承諾方案結合：[第六模組：零件互換 - PLONK + FRI 的組合藝術](../module_6_modularity/)！
+On modern hardware:
+- Table precomputation: One-time cost
+- Lookup proof generation: Sub-linear growth
+- Verification time: Constant level
+
+---
+
+## Module Summary
+
+Through this module, we learned:
+
+1. **SNARK-unfriendly operations** performance bottlenecks
+2. **Plookup protocol** core ideas and implementation
+3. **Table design** strategies and techniques
+4. **Real applications** scenarios and performance advantages
+
+### Core Insights
+
+- Lookup tables reduce complex operation costs from O(k) to O(1)
+- Precomputed tables can be reused across multiple proofs
+- Proper table design is key to system performance
+
+## Self-Assessment
+
+Before proceeding to the next module, confirm you can:
+- [ ] Explain which operations are SNARK-unfriendly
+- [ ] Understand Plookup's core ideas
+- [ ] Design simple lookup tables
+- [ ] Analyze performance improvements from lookup tables
+
+## Next Steps
+
+PLONK's modular design allows us to swap different components. Let's learn how to combine PLONK with different polynomial commitment schemes: [Module 6: Component Swapping - The Art of PLONK + FRI Combination](../module_6_modularity/)!

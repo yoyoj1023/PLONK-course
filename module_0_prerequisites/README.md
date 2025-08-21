@@ -1,48 +1,48 @@
-# 零號模組：地基與工具箱 (Prerequisites & Toolbox)
+# Module 0: Foundation & Toolbox (Prerequisites & Toolbox)
 
-## 模組目標
-在正式開始前，確保我們擁有相同的詞彙和數學工具。
+## Module Objective
+Before officially starting, ensure we have the same vocabulary and mathematical tools.
 
-## 心智模型
-在學習蓋房子前，先認識磚塊、水泥和測量工具。
+## Mental Model
+Before learning to build a house, first get familiar with bricks, cement, and measuring tools.
 
 ---
 
-## 第一課：有限體 (Finite Fields) 的直覺
+## Lesson 1: Intuition of Finite Fields
 
-### 1.1 為什麼需要有限體？
+### 1.1 Why Do We Need Finite Fields?
 
-在日常計算中，我們習慣了無限大的數字世界。但在密碼學和零知識證明中，我們需要的是：
+In daily computation, we're accustomed to an infinite world of numbers. But in cryptography and zero-knowledge proofs, we need:
 
-**防止數字無限增長**
-- 計算機存儲和處理能力有限
-- 需要確定性的計算結果
-- 避免溢出問題
+**Prevent Infinite Number Growth**
+- Computer storage and processing capabilities are limited
+- Need deterministic computation results
+- Avoid overflow problems
 
-**帶來代數特性**
-- 保證除法運算總是有定義的
-- 確保多項式運算的穩定性
-- 提供豐富的數學結構
+**Bring Algebraic Properties**
+- Ensure division operations are always defined
+- Guarantee stability of polynomial operations
+- Provide rich mathematical structures
 
-### 1.2 時鐘算術：模運算的直觀理解
+### 1.2 Clock Arithmetic: Intuitive Understanding of Modular Operations
 
-想像一個只有12小時的時鐘：
-- 10點 + 5點 = 3點 (不是15點)
-- 這就是模運算：(10 + 5) mod 12 = 3
+Imagine a clock with only 12 hours:
+- 10 o'clock + 5 o'clock = 3 o'clock (not 15 o'clock)
+- This is modular arithmetic: (10 + 5) mod 12 = 3
 
-在有限體 F_p 中：
-- 所有運算都在模 p 下進行
-- p 通常是一個大質數
-- 例如：F_17 = {0, 1, 2, ..., 16}
+In finite field F_p:
+- All operations are performed modulo p
+- p is usually a large prime
+- Example: F_17 = {0, 1, 2, ..., 16}
 
-**練習 1.1**
-在 F_7 中計算：
+**Exercise 1.1**
+Compute in F_7:
 - 5 + 4 = ?
 - 6 × 3 = ?
 - 5 - 6 = ?
 
 <details>
-<summary>答案</summary>
+<summary>Answer</summary>
 
 - 5 + 4 = 9 mod 7 = 2
 - 6 × 3 = 18 mod 7 = 4  
@@ -52,127 +52,127 @@
 
 ---
 
-## 第二課：多項式的力量
+## Lesson 2: The Power of Polynomials
 
-### 2.1 核心思想：用多項式編碼資訊
+### 2.1 Core Idea: Encoding Information with Polynomials
 
-一個多項式可以「編碼」海量的資訊：
-- 係數：f(x) = 3x² + 2x + 1
-- 在某點的值：f(5) = 3×25 + 2×5 + 1 = 86
-- 根：使 f(x) = 0 的 x 值
+A polynomial can "encode" massive amounts of information:
+- Coefficients: f(x) = 3x² + 2x + 1
+- Value at a point: f(5) = 3×25 + 2×5 + 1 = 86
+- Roots: x values that make f(x) = 0
 
-### 2.2 拉格朗日插值：從點到多項式
+### 2.2 Lagrange Interpolation: From Points to Polynomials
 
-**核心定理**：給定 n+1 個不同的點，存在唯一的 n 次多項式通過這些點。
+**Core Theorem**: Given n+1 distinct points, there exists a unique polynomial of degree n that passes through these points.
 
-**實例**：
-給定點 (1, 3), (2, 8), (3, 15)
-目標：找到唯一的2次多項式 f(x) = ax² + bx + c
+**Example**:
+Given points (1, 3), (2, 8), (3, 15)
+Goal: Find the unique degree-2 polynomial f(x) = ax² + bx + c
 
-步驟：
-1. 建立方程組：
+Steps:
+1. Set up system of equations:
    - f(1) = a + b + c = 3
    - f(2) = 4a + 2b + c = 8  
    - f(3) = 9a + 3b + c = 15
 
-2. 解得：a = 1, b = 2, c = 0
-3. 所以 f(x) = x² + 2x
+2. Solve: a = 1, b = 2, c = 0
+3. Therefore f(x) = x² + 2x
 
-**練習 2.1**
-給定點 (0, 1), (1, 4), (2, 9)，找到通過這些點的多項式。
+**Exercise 2.1**
+Given points (0, 1), (1, 4), (2, 9), find the polynomial that passes through these points.
 
 <details>
-<summary>提示</summary>
+<summary>Hint</summary>
 
-觀察：1, 4, 9 = 1², 2², 3²
-所以多項式可能是 f(x) = (x+1)²
+Observe: 1, 4, 9 = 1², 2², 3²
+So the polynomial might be f(x) = (x+1)²
 
 </details>
 
-### 2.3 拉格朗日插值公式
+### 2.3 Lagrange Interpolation Formula
 
-對於點 (x₀, y₀), (x₁, y₁), ..., (xₙ, yₙ)：
+For points (x₀, y₀), (x₁, y₁), ..., (xₙ, yₙ):
 
 f(x) = Σᵢ yᵢ × Lᵢ(x)
 
-其中 Lᵢ(x) = Π_{j≠i} (x - xⱼ)/(xᵢ - xⱼ)
+where Lᵢ(x) = Π_{j≠i} (x - xⱼ)/(xᵢ - xⱼ)
 
-**直觀理解**：
-- Lᵢ(x) 在 x = xᵢ 時等於1
-- 在其他所有 xⱼ 時等於0
-- 這樣 f(xᵢ) = yᵢ
+**Intuitive Understanding**:
+- Lᵢ(x) equals 1 when x = xᵢ
+- Equals 0 at all other xⱼ
+- Thus f(xᵢ) = yᵢ
 
 ---
 
-## 第三課：多項式承諾方案 (PCS) 概念
+## Lesson 3: Polynomial Commitment Scheme (PCS) Concepts
 
-### 3.1 什麼是多項式承諾？
+### 3.1 What is a Polynomial Commitment?
 
-**類比**：你有一個密封的信封（承諾），裡面寫著一個秘密多項式。你可以：
-1. 向別人展示信封的「指紋」（承諾值）
-2. 在不打開信封的情況下，證明信封裡的多項式在某點的值
+**Analogy**: You have a sealed envelope (commitment) with a secret polynomial written inside. You can:
+1. Show others the envelope's "fingerprint" (commitment value)
+2. Without opening the envelope, prove that the polynomial inside has a specific value at a certain point
 
-### 3.2 PCS的核心功能
+### 3.2 Core Functions of PCS
 
-**承諾 (Commit)**
-- 輸入：秘密多項式 f(x)
-- 輸出：簡短的承諾值 C
-- 性質：無法從 C 推斷出 f(x) 的任何信息
+**Commit**
+- Input: Secret polynomial f(x)
+- Output: Short commitment value C
+- Property: Cannot infer any information about f(x) from C
 
-**打開 (Open)**
-- 輸入：承諾 C、點 z、聲稱的值 y、證明 π
-- 聲稱：承諾的多項式在 z 點的值是 y
-- 輸出：接受/拒絕
+**Open**
+- Input: Commitment C, point z, claimed value y, proof π
+- Claim: The committed polynomial's value at z is y
+- Output: Accept/Reject
 
-### 3.3 PCS的安全性質
+### 3.3 Security Properties of PCS
 
-**綁定性 (Binding)**
-- 無法對同一個多項式生成兩個不同的有效證明
+**Binding**
+- Cannot generate two different valid proofs for the same polynomial
 
-**隱藏性 (Hiding)**
-- 承諾不洩露多項式的任何信息
+**Hiding**
+- The commitment reveals no information about the polynomial
 
-**知識可提取性 (Knowledge Extraction)**
-- 如果能生成有效證明，必須「知道」相應的多項式
+**Knowledge Extraction**
+- If one can generate a valid proof, they must "know" the corresponding polynomial
 
-### 3.4 黑盒子階段的理解
+### 3.4 Black Box Stage Understanding
 
-在這個階段，您只需要知道：
-- PCS 是一個工具，可以讓我們「承諾」一個多項式
-- 可以在不透露多項式的情況下證明其在某點的值
-- 具體的實現（如 KZG 或 FRI）我們稍後會學習
+At this stage, you only need to know:
+- PCS is a tool that allows us to "commit" to a polynomial
+- Can prove the polynomial's value at a point without revealing the polynomial
+- Specific implementations (like KZG or FRI) will be learned later
 
-**練習 3.1**
-思考題：為什麼 PCS 對零知識證明如此重要？
+**Exercise 3.1**
+Reflection: Why is PCS so important for zero-knowledge proofs?
 
 <details>
-<summary>思考方向</summary>
+<summary>Thinking Direction</summary>
 
-1. 多項式可以編碼複雜的計算
-2. PCS 允許我們保持計算私密的同時證明其正確性
-3. 這是實現「零知識」的關鍵技術
+1. Polynomials can encode complex computations
+2. PCS allows us to prove correctness while keeping computations private
+3. This is key technology for achieving "zero-knowledge"
 
 </details>
 
 ---
 
-## 模組總結
+## Module Summary
 
-通過本模組，我們建立了 PLONK 學習的基礎：
+Through this module, we established the foundation for PLONK learning:
 
-1. **有限體**：提供了有界的數學環境
-2. **多項式**：用於編碼複雜信息的強大工具
-3. **PCS**：保持隱私的同時證明計算正確性的關鍵技術
+1. **Finite Fields**: Provide a bounded mathematical environment
+2. **Polynomials**: Powerful tools for encoding complex information
+3. **PCS**: Key technology for proving computational correctness while maintaining privacy
 
-這些工具將在後續模組中反覆使用，請確保對這些概念有扎實的理解。
+These tools will be repeatedly used in subsequent modules. Please ensure you have a solid understanding of these concepts.
 
-## 自我檢驗
+## Self-Assessment
 
-在進入下一模組前，請確認您能夠：
-- [ ] 在有限體中進行基本運算
-- [ ] 理解拉格朗日插值的原理
-- [ ] 解釋 PCS 的核心功能和安全性質
+Before proceeding to the next module, confirm you can:
+- [ ] Perform basic operations in finite fields
+- [ ] Understand the principles of Lagrange interpolation
+- [ ] Explain the core functions and security properties of PCS
 
-## 下一步
+## Next Steps
 
-準備好了嗎？讓我們進入[第一模組：最小元件 - 單一門的奧秘](../module_1_gate_constraints/)！
+Ready? Let's proceed to [Module 1: Minimal Components - The Mystery of a Single Gate](../module_1_gate_constraints/)!

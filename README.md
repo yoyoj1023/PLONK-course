@@ -1,214 +1,214 @@
-這是一份為您精心設計的「PLONK 協議完全掌握」課程。
+This is a carefully designed course on "Complete Mastery of the PLONK Protocol" created for you.
 
-這套課程的設計哲學是**從直覺到理論，從元件到系統**。我們不會一開始就陷入複雜的數學符號，而是先建立起每個元件存在的「目的」和「心智模型」，然後再逐步深入其內部工作原理。課程路徑將確保您在學習每個新概念時，都已經掌握了必要的前置知識。
-
----
-
-### **PLONK 協議完全掌握課程 (The PLONK Protocol Masterclass)**
-
-**課程目標：** 學習結束後，您將不僅能完整解釋 PLONK 協議的每一步流程，還能理解其設計的精妙之處，並具備分析和設計 PLONK 電路的核心能力，最終無縫接軌至 Plonky2/3 的學習。
+The design philosophy of this course is **from intuition to theory, from components to systems**. We won't dive into complex mathematical notation from the start, but instead first establish the "purpose" and "mental models" of each component, then gradually delve into their internal workings. The course path ensures that when you learn each new concept, you already have the necessary prerequisite knowledge.
 
 ---
 
-### **課程路徑總覽**
+### **The PLONK Protocol Masterclass**
 
-#### [零號模組：地基與工具箱 (Prerequisites & Toolbox)](./module_0_prerequisites/)
-- 有限體的直覺理解
-- 多項式的力量與拉格朗日插值
-- 多項式承諾方案(PCS)概念
-
-#### [第一模組：最小元件 - 單一門的奧秘 (The Gate Constraint)](./module_1_gate_constraints/)
-- PLONK算術化公式深度剖析
-- 電路設計實戰
-- R1CS vs PLONK Gate對比
-
-#### [第二模組：連接電路 - 置換參數的魔法 (The Permutation Argument)](./module_2_permutation/)
-- 複製約束問題
-- 置換參數的直覺理解
-- PLONK的置換實現
-
-#### [第三模組：語言轉換 - 從電路到多項式 (From Circuits to Polynomials)](./module_3_polynomials/)
-- 視角提升：從數值到多項式
-- 零化多項式與商多項式
-- 約束的多項式表示
-
-#### [第四模組：系統整合 - 完整的證明與驗證流程 (The Full Protocol)](./module_4_protocol/)
-- Prover的完整工作流程
-- Verifier的驗證邏輯
-- 協議的安全性分析
-
-#### [第五模組：效能渦輪 - 使用查找表 (Lookup Arguments)](./module_5_lookup/)
-- SNARK-unfriendly運算的挑戰
-- Plookup協議原理
-- 實際應用場景
-
-#### [第六模組：零件互換 - PLONK + FRI的組合藝術 (Modularity)](./module_6_modularity/)
-- 多項式承諾方案的模塊化
-- KZG vs FRI的權衡
-- Plonky2/3的技術基礎
-
-#### [最終模組：動手實作 - 理論與實踐 (Hands-on Lab)](./module_7_practice/)
-- 電路設計練習
-- 程式碼庫探索
-- 高階語言實作
+**Course Objective:** By the end of this course, you will not only be able to fully explain every step of the PLONK protocol, but also understand the elegance of its design, possess core capabilities for analyzing and designing PLONK circuits, and seamlessly transition to learning Plonky2/3.
 
 ---
 
-### **詳細課程內容**
+### **Course Roadmap Overview**
 
-#### **零號模組：地基與工具箱 (Prerequisites & Toolbox)**
+#### [Module 0: Foundation & Toolbox (Prerequisites & Toolbox)](./module_0_prerequisites/)
+- Intuitive understanding of finite fields
+- The power of polynomials and Lagrange interpolation
+- Polynomial Commitment Scheme (PCS) concepts
 
-**課程目標：** 在正式開始前，確保我們擁有相同的詞彙和數學工具。
-**心智模型：** 在學習蓋房子前，先認識磚塊、水泥和測量工具。
+#### [Module 1: Minimal Components - The Mystery of a Single Gate (The Gate Constraint)](./module_1_gate_constraints/)
+- In-depth analysis of PLONK arithmetization formula
+- Circuit design practice
+- R1CS vs PLONK Gate comparison
 
-*   **1. 有限體 (Finite Fields) 的直覺：**
-    *   為什麼需要有限體？（防止數字無限增長、帶來代數特性）
-    *   時鐘算術：模運算的直觀理解。
-*   **2. 多項式的力量：**
-    *   核心思想：用一個簡潔的多項式，可以「編碼」海量的資訊。
-    *   拉格朗日插值：給我幾個點，還你一個唯一的多項式。
-    *   多項式承諾方案 (PCS) 的概念 (黑盒子階段)：
-        *   承諾 (Commit)：我對一個秘密多項式生成一個簡短的「指紋」。
-        *   打開 (Open)：我可以向你證明，我的秘密多項式在某個點 `z` 的值確實是 `y`，而無需透露整個多項式。
-        *   *此階段，你只需要知道 PCS 的功能，不需要知道 KZG 或 FRI 的內部細節。*
+#### [Module 2: Connecting Circuits - The Magic of Permutation Arguments (The Permutation Argument)](./module_2_permutation/)
+- Copy constraint problems
+- Intuitive understanding of permutation arguments
+- PLONK's permutation implementation
 
-#### **第一模組：最小元件 - 單一門的奧秘 (The Gate Constraint)**
+#### [Module 3: Language Translation - From Circuits to Polynomials (From Circuits to Polynomials)](./module_3_polynomials/)
+- Perspective elevation: from values to polynomials
+- Vanishing polynomials and quotient polynomials
+- Polynomial representation of constraints
 
-**課程目標：** 深度剖析 PLONK 的核心約束公式，理解其如何成為一個可配置的「算術元件」。
-**心智模型：** 將公式理解為一塊可程式化的樂高積木。
+#### [Module 4: System Integration - Complete Proving and Verification Flow (The Full Protocol)](./module_4_protocol/)
+- Prover's complete workflow
+- Verifier's verification logic
+- Protocol security analysis
 
-*   **1. 剖析 PLONK 算術化公式：**
+#### [Module 5: Performance Turbo - Using Lookup Tables (Lookup Arguments)](./module_5_lookup/)
+- Challenges of SNARK-unfriendly operations
+- Plookup protocol principles
+- Real-world application scenarios
+
+#### [Module 6: Component Swapping - The Art of PLONK + FRI Combination (Modularity)](./module_6_modularity/)
+- Modularization of polynomial commitment schemes
+- KZG vs FRI trade-offs
+- Technical foundation of Plonky2/3
+
+#### [Final Module: Hands-on Implementation - Theory and Practice (Hands-on Lab)](./module_7_practice/)
+- Circuit design exercises
+- Code base exploration
+- High-level language implementation
+
+---
+
+### **Detailed Course Content**
+
+#### **Module 0: Foundation & Toolbox (Prerequisites & Toolbox)**
+
+**Course Objective:** Before officially starting, ensure we have the same vocabulary and mathematical tools.
+**Mental Model:** Before learning to build a house, first get familiar with bricks, cement, and measuring tools.
+
+*   **1. Intuition of Finite Fields:**
+    *   Why do we need finite fields? (Prevent infinite number growth, bring algebraic properties)
+    *   Clock arithmetic: intuitive understanding of modular operations.
+*   **2. The Power of Polynomials:**
+    *   Core idea: a concise polynomial can "encode" massive amounts of information.
+    *   Lagrange interpolation: give me a few points, I'll return a unique polynomial.
+    *   Polynomial Commitment Scheme (PCS) concept (black box stage):
+        *   Commit: I generate a short "fingerprint" for a secret polynomial.
+        *   Open: I can prove to you that my secret polynomial's value at point `z` is indeed `y`, without revealing the entire polynomial.
+        *   *At this stage, you only need to know PCS functionality, not the internal details of KZG or FRI.*
+
+#### **Module 1: Minimal Components - The Mystery of a Single Gate (The Gate Constraint)**
+
+**Course Objective:** In-depth analysis of PLONK's core constraint formula, understanding how it becomes a configurable "arithmetic component."
+**Mental Model:** Understand the formula as a programmable Lego block.
+
+*   **1. Dissecting the PLONK Arithmetization Formula:**
     *   `q_L * w_a + q_R * w_b + q_O * w_c + q_M * (w_a * w_b) + q_C = 0`
-    *   `w` (Wires)：數據的載體（左、右、輸出線）。
-    *   `q` (Selectors)：電路的配置開關（左、右、輸出、乘法、常數選擇子）。
-*   **2. 成為電路設計師：**
-    *   親手配置 `q` 值來實現不同的「門 (Gates)」：
-        *   加法門 (`a+b=c`)
-        *   乘法門 (`a*b=c`)
-        *   常數門 (`a=5`)
-        *   自定義門 (`a*b + a = c`)
-*   **3. R1CS vs PLONK Gate：**
-    *   對比 R1CS 的 `A*B-C=0`，體會 PLONK 門的靈活性與高效性。
+    *   `w` (Wires): data carriers (left, right, output wires).
+    *   `q` (Selectors): circuit configuration switches (left, right, output, multiplication, constant selectors).
+*   **2. Becoming a Circuit Designer:**
+    *   Hands-on configuration of `q` values to implement different "gates":
+        *   Addition gate (`a+b=c`)
+        *   Multiplication gate (`a*b=c`)
+        *   Constant gate (`a=5`)
+        *   Custom gate (`a*b + a = c`)
+*   **3. R1CS vs PLONK Gate:**
+    *   Compare with R1CS's `A*B-C=0`, experience PLONK gate's flexibility and efficiency.
 
-#### **第二模組：連接電路 - 置換參數的魔法 (The Permutation Argument)**
+#### **Module 2: Connecting Circuits - The Magic of Permutation Arguments (The Permutation Argument)**
 
-**課程目標：** 理解 PLONK 如何解決「線路連接」這個核心問題。
-**心智模型：** 整個電路是一張大的 Excel 表格，置換參數就是用來證明「A欄的第3格 = C欄的第8格」這樣的等式約束。
+**Course Objective:** Understand how PLONK solves the core problem of "wire connections."
+**Mental Model:** The entire circuit is a large Excel spreadsheet, and the permutation argument is used to prove equality constraints like "cell A3 = cell C8."
 
-*   **1. 問題的提出：**
-    *   我們有很多獨立的門，如何證明一個門的輸出 `w_c`，確實等於另一個門的輸入 `w_a`？這就是**複製約束 (Copy Constraints)**。
-*   **2. 置換參數 (Permutation Argument) 的直覺：**
-    *   想像有兩個數組 A 和 B，我想向你證明 B 只是 A 的一個重新排列，而內容完全一樣。
-    *   核心思想：用一個隨機挑戰數 `γ`，將兩個數組中的元素「隨機線性組合」起來。如果 `Π(A_i) = Π(B_i)`，那麼 A 和 B 是彼此置換的概率極高。
-*   **3. PLONK 的實現：**
-    *   如何將所有電路線 (`w_a`, `w_b`, `w_c`) 視為一個長長的數組。
-    *   如何用一個「置換多項式 `Z(X)`」來編碼這個置換關係。
-    *   **重點：** 此階段的目標是理解置換參數的**目的**和**直覺**，而非立即深入 `Z(X)` 的完整數學構造。
+*   **1. Problem Statement:**
+    *   We have many independent gates, how do we prove that one gate's output `w_c` indeed equals another gate's input `w_a`? This is **Copy Constraints**.
+*   **2. Intuition of Permutation Arguments:**
+    *   Imagine two arrays A and B, I want to prove to you that B is just a rearrangement of A, with exactly the same content.
+    *   Core idea: use a random challenge number `γ` to "randomly linearly combine" elements from both arrays. If `Π(A_i) = Π(B_i)`, then A and B are permutations of each other with very high probability.
+*   **3. PLONK's Implementation:**
+    *   How to view all circuit wires (`w_a`, `w_b`, `w_c`) as one long array.
+    *   How to use a "permutation polynomial `Z(X)`" to encode this permutation relationship.
+    *   **Key Point:** The goal at this stage is to understand the **purpose** and **intuition** of permutation arguments, not to immediately dive into the complete mathematical construction of `Z(X)`.
 
-#### **第三模組：語言轉換 - 從電路到多項式 (From Circuits to Polynomials)**
+#### **Module 3: Language Translation - From Circuits to Polynomials (From Circuits to Polynomials)**
 
-**課程目標：** 理解 PLONK 如何將整個電路的約束「打包」進幾個多項式恆等式中。
-**心智模型：** 將離散的、一個個的門約束，轉化為連續的、光滑的多項式曲線。
+**Course Objective:** Understand how PLONK "packages" all circuit constraints into several polynomial identities.
+**Mental Model:** Transform discrete, individual gate constraints into continuous, smooth polynomial curves.
 
-*   **1. 視角提升：**
-    *   `w_a`, `q_L` 不再是單個數值，而是代表了所有門數值的**多項式** `w_a(X)`, `q_L(X)`。
-    *   引入「域的根 (Roots of Unity)」 `ω` 作為每個門的「座標」。
-*   **2. 整合門約束：**
-    *   將所有門約束 (`q_L*w_a + ... = 0`) 聚合成一個巨大的**約束多項式 `P(X)`**。
-    *   如果所有約束都滿足，`P(X)` 在每個門的座標上都為 0。
-*   **3. 零化多項式 (Vanishing Polynomial) `Z_H(X)`：**
-    *   介紹 `Z_H(X)`，它在所有門的座標上都為 0。
-    *   **關鍵洞察：** 如果 `P(X)` 在所有門的位置都為0，那麼 `P(X)` 必定能被 `Z_H(X)` **整除**。
-*   **4. 商多項式 (Quotient Polynomial) `t(X)`：**
-    *   `t(X) = P(X) / Z_H(X)`。Prover 的核心任務之一，就是計算出這個商多項式 `t(X)`。
-*   **5. 整合置換約束：**
-    *   類似地，第二模組的置換參數也會被轉化為一個關於 `Z(X)` 的多項式恆等式。
+*   **1. Perspective Elevation:**
+    *   `w_a`, `q_L` are no longer single values, but represent **polynomials** `w_a(X)`, `q_L(X)` of all gate values.
+    *   Introduce "roots of unity" `ω` as "coordinates" for each gate.
+*   **2. Integrating Gate Constraints:**
+    *   Aggregate all gate constraints (`q_L*w_a + ... = 0`) into one massive **constraint polynomial `P(X)`**.
+    *   If all constraints are satisfied, `P(X)` equals 0 at every gate's coordinates.
+*   **3. Vanishing Polynomial `Z_H(X)`:**
+    *   Introduce `Z_H(X)`, which equals 0 at all gate coordinates.
+    *   **Key Insight:** If `P(X)` equals 0 at all gate positions, then `P(X)` must be **divisible** by `Z_H(X)`.
+*   **4. Quotient Polynomial `t(X)`:**
+    *   `t(X) = P(X) / Z_H(X)`. One of the prover's core tasks is computing this quotient polynomial `t(X)`.
+*   **5. Integrating Permutation Constraints:**
+    *   Similarly, the permutation arguments from Module 2 are also transformed into polynomial identities about `Z(X)`.
 
-#### **第四模組：系統整合 - 完整的證明與驗證流程 (The Full Protocol)**
+#### **Module 4: System Integration - Complete Proving and Verification Flow (The Full Protocol)**
 
-**課程目標：** 將所有零件組裝起來，走完一遍完整的 PLONK 協議流程。
-**心智模型：** 觀看一條完整的工廠流水線，從 Prover 輸入秘密開始，到 Verifier 輸出「接受/拒絕」結束。
+**Course Objective:** Assemble all components and walk through the complete PLONK protocol flow.
+**Mental Model:** Watch a complete factory assembly line, from prover inputting secrets to verifier outputting "accept/reject."
 
-*   **1. Prover 的工作流程 (按順序)：**
-    1.  **見證階段：** 將秘密輸入填入電路，計算出所有 `w_a, w_b, w_c` 的值。
-    2.  **多項式承諾階段 (第一輪)：** 對 `w_a(X), w_b(X), w_c(X)` 進行多項式承諾。
-    3.  **置換多項式承諾階段 (第二輪)：** 從 Verifier 獲取隨機數 `β, γ`，計算並承諾置換多項式 `Z(X)`。
-    4.  **商多項式承諾階段 (第三輪)：** 從 Verifier 獲取隨機數 `α`，計算並承諾商多項式 `t(X)`。
-    5.  **求值階段 (第四輪)：** 從 Verifier 獲取隨機挑戰點 `z`，計算並發送所有多項式在 `z` 和 `zω` 點的取值。
-*   **2. Verifier 的工作流程：**
-    *   接收所有承諾和求值。
-    *   不碰任何秘密，只使用公開輸入、承諾和求值，驗證最終的「PLONK 方程式」是否成立。這個方程式整合了門約束、置換約束和商多項式約束。
+*   **1. Prover's Workflow (in order):**
+    1.  **Witness Phase:** Fill secret inputs into circuit, compute all `w_a, w_b, w_c` values.
+    2.  **Polynomial Commitment Phase (Round 1):** Commit to polynomials `w_a(X), w_b(X), w_c(X)`.
+    3.  **Permutation Polynomial Commitment Phase (Round 2):** Receive random numbers `β, γ` from verifier, compute and commit permutation polynomial `Z(X)`.
+    4.  **Quotient Polynomial Commitment Phase (Round 3):** Receive random number `α` from verifier, compute and commit quotient polynomial `t(X)`.
+    5.  **Evaluation Phase (Round 4):** Receive random challenge point `z` from verifier, compute and send evaluations of all polynomials at points `z` and `zω`.
+*   **2. Verifier's Workflow:**
+    *   Receive all commitments and evaluations.
+    *   Without touching any secrets, use only public inputs, commitments and evaluations to verify whether the final "PLONK equation" holds. This equation integrates gate constraints, permutation constraints, and quotient polynomial constraints.
 
-#### **第五模組：效能渦輪 - 使用查找表 (Lookup Arguments)**
+#### **Module 5: Performance Turbo - Using Lookup Tables (Lookup Arguments)**
 
-**課程目標：** 學習 PLONK 的一項關鍵優化，以極低成本處理複雜運算。
-**心智模型：** 與其在電路裡費力計算 `sin(x)`，不如直接查一本預先計算好的「三角函數表」。
+**Course Objective:** Learn a key optimization of PLONK to handle complex operations at extremely low cost.
+**Mental Model:** Instead of laboriously computing `sin(x)` in the circuit, why not directly look up a pre-computed "trigonometric function table."
 
-*   **1. 問題：SNARK-unfriendly 運算**
-    *   為什麼「範圍檢查 (Range Check)」（如 `x` 是否在 0 到 2^16 之間）和「位元運算 (Bitwise Operations)」在標準電路中成本極高？
-*   **2. Plookup 協議的直覺：**
-    *   Prover 聲明：「我計算中用到的這些值 (`a_1, a_2, ...`)，都可以在這張公開的、預先計算好的表格 `t` 中找到」。
-*   **3. Plookup 的工作原理簡介：**
-    *   類似於置換參數，它也使用隨機挑戰數將「待查值」和「表格值」壓縮，然後證明它們是彼此的子集。
-*   **4. 應用場景：**
-    *   高效的 RAM / ROM 訪問。
-    *   加速 zkEVM 中的特定操作碼 (opcodes)。
+*   **1. Problem: SNARK-unfriendly Operations**
+    *   Why are "range checks" (like whether `x` is between 0 and 2^16) and "bitwise operations" extremely expensive in standard circuits?
+*   **2. Plookup Protocol Intuition:**
+    *   Prover claims: "The values I used in my computation (`a_1, a_2, ...`) can all be found in this public, pre-computed table `t`".
+*   **3. Plookup Working Principle Overview:**
+    *   Similar to permutation arguments, it also uses random challenge numbers to compress "lookup values" and "table values", then proves they are subsets of each other.
+*   **4. Application Scenarios:**
+    *   Efficient RAM/ROM access.
+    *   Accelerating specific opcodes in zkEVM.
 
-#### **第六模組：零件互換 - PLONK + FRI 的組合藝術 (Modularity)**
+#### **Module 6: Component Swapping - The Art of PLONK + FRI Combination (Modularity)**
 
-**課程目標：** 打破之前 PCS 的黑盒子，理解 PLONK 如何與不同的多項式承諾方案結合，特別是 FRI。
-**心智模型：** 我的汽車引擎 (PLONK算術化) 設計好了，現在我可以選擇給它配一個平順的自動變速箱 (KZG)，或者一個堅固手動變速箱 (FRI)。
+**Course Objective:** Break open the PCS black box, understand how PLONK combines with different polynomial commitment schemes, especially FRI.
+**Mental Model:** My car engine (PLONK arithmetization) is designed, now I can choose to pair it with a smooth automatic transmission (KZG), or a robust manual transmission (FRI).
 
-*   **1. 回顧多項式承諾方案 (PCS) 的職責：**
-    *   承諾與打開。
-*   **2. 兩種主流 PCS 的對比：**
-    *   **KZG：**
-        *   優點：證明尺寸小，驗證快。
-        *   缺點：需要一次性的、特定於電路的**可信設置 (Trusted Setup)**。
-    *   **FRI (Fast Reed-Solomon IOPP)：**
-        *   優點：**透明 (Transparent)**，無需可信設置。
-        *   缺點：證明尺寸較大，驗證較慢。
-*   **3. PLONK + FRI 的組合 (Plonky2/3 的基礎)：**
-    *   協議如何變化？在第四模組的流程中，所有「承諾」和「打開」的步驟，都用 FRI 的協議來替代。
-    *   這意味著什麼？我們得到了一個完全**透明**的、無需任何信任假設的、靈活的證明系統。
+*   **1. Review PCS Responsibilities:**
+    *   Commitment and opening.
+*   **2. Comparison of Two Mainstream PCS:**
+    *   **KZG:**
+        *   Pros: Small proof size, fast verification.
+        *   Cons: Requires one-time, circuit-specific **trusted setup**.
+    *   **FRI (Fast Reed-Solomon IOPP):**
+        *   Pros: **Transparent**, no trusted setup required.
+        *   Cons: Larger proof size, slower verification.
+*   **3. PLONK + FRI Combination (Plonky2/3 Foundation):**
+    *   How does the protocol change? In Module 4's flow, all "commitment" and "opening" steps are replaced with FRI's protocol.
+    *   What does this mean? We get a completely **transparent**, assumption-free, flexible proof system.
 
-#### **最終模組：動手實作 - 理論與實踐 (Hands-on Lab)**
+#### **Final Module: Hands-on Implementation - Theory and Practice (Hands-on Lab)**
 
-**課程目標：** 將理論知識轉化為實際技能。
+**Course Objective:** Transform theoretical knowledge into practical skills.
 
-*   **1. 電路設計練習：**
-    *   用紙筆為一個 MiMC 哈希函數或一個簡單的 Fibonacci 數列，設計出 PLONK 電路，寫下每一扇門的選擇子 `q` 值。
-*   **2. 探索程式碼庫 (選做)：**
-    *   閱讀 Plonky2 或其他 PLONK 實現的原始碼，找到與「門約束」、「商多項式」、「置換參數」對應的程式碼片段。
-*   **3. 使用高階語言 (推薦)：**
-    *   使用如 Noir, Circom 等 ZK 領域特定語言來編寫一個簡單的電路，然後觀察底層生成的 PLONK 約束。
-
----
-
-通過這套精心設計的課程，您將建立起對 PLONK 堅實而深入的理解，為您探索更前沿的 Plonky3 和其他 ZKP 技術打下最完美的基礎。
-
-### 🎯 課程特色
-- **循序漸進**：從基礎概念到高階應用
-- **理論實踐並重**：既有數學原理也有程式碼實作
-- **豐富的例子**：大量具體例子幫助理解
-- **自我檢驗**：每個模組都有檢驗清單
-
-### 📈 學習建議
-- 預計學習時間：40-60 小時（根據背景而定）
-- 建議基礎：基本的數學背景和程式設計經驗
-- 學習方式：理論學習 + 動手實踐 + 反覆回顧
-
-### 🎯 課程目標
-
-#### 學習結束後，您將：
-- 完整解釋PLONK協議的每一步流程
-- 理解PLONK設計的精妙之處
-- 具備分析和設計PLONK電路的核心能力
-- 無縫接軌至Plonky2/3的學習
-
-### 🏆 [課程完成證明](./COURSE_COMPLETION.md)
-完成課程後，您將獲得完整的知識體系和實踐技能，準備好在零知識證明領域發光發熱！
+*   **1. Circuit Design Exercises:**
+    *   Use pen and paper to design PLONK circuits for a MiMC hash function or simple Fibonacci sequence, writing down selector `q` values for each gate.
+*   **2. Code Base Exploration (Optional):**
+    *   Read source code of Plonky2 or other PLONK implementations, find code segments corresponding to "gate constraints," "quotient polynomials," "permutation arguments."
+*   **3. Using High-level Languages (Recommended):**
+    *   Use ZK domain-specific languages like Noir, Circom to write simple circuits, then observe the underlying generated PLONK constraints.
 
 ---
 
-**立即開始您的 PLONK 學習之旅！** 🎓
+Through this carefully designed course, you will build a solid and deep understanding of PLONK, laying the perfect foundation for exploring more advanced Plonky3 and other ZKP technologies.
+
+### 🎯 Course Features
+- **Progressive Learning**: From basic concepts to advanced applications
+- **Theory and Practice Combined**: Both mathematical principles and code implementation
+- **Rich Examples**: Abundant concrete examples to aid understanding
+- **Self-Assessment**: Each module has verification checklists
+
+### 📈 Learning Recommendations
+- Expected learning time: 40-60 hours (depending on background)
+- Recommended prerequisites: Basic mathematical background and programming experience
+- Learning approach: Theoretical study + hands-on practice + repeated review
+
+### 🎯 Course Objectives
+
+#### Upon completion, you will be able to:
+- Completely explain every step of the PLONK protocol
+- Understand the elegance of PLONK's design
+- Possess core capabilities for analyzing and designing PLONK circuits
+- Seamlessly transition to learning Plonky2/3
+
+### 🏆 [Course Completion Certificate](./COURSE_COMPLETION.md)
+Upon completing the course, you will have gained a complete knowledge system and practical skills, ready to shine in the zero-knowledge proof field!
+
+---
+
+**Start your PLONK learning journey now!** 🎓

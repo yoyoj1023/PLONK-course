@@ -1,264 +1,264 @@
-# 第一模組：最小元件 - 單一門的奧秘 (The Gate Constraint)
+# Module 1: Minimal Components - The Mystery of a Single Gate (The Gate Constraint)
 
-## 模組目標
-深度剖析 PLONK 的核心約束公式，理解其如何成為一個可配置的「算術元件」。
+## Module Objective
+In-depth analysis of PLONK's core constraint formula, understanding how it becomes a configurable "arithmetic component."
 
-## 心智模型
-將公式理解為一塊可程式化的樂高積木。
+## Mental Model
+Understand the formula as a programmable Lego block.
 
 ---
 
-## 第一課：剖析 PLONK 算術化公式
+## Lesson 1: Dissecting the PLONK Arithmetization Formula
 
-### 1.1 PLONK 的核心公式
+### 1.1 PLONK's Core Formula
 
 ```
 q_L * w_a + q_R * w_b + q_O * w_c + q_M * (w_a * w_b) + q_C = 0
 ```
 
-這個看似簡單的公式，實際上是 PLONK 協議的心臟。讓我們逐一解析每個組件：
+This seemingly simple formula is actually the heart of the PLONK protocol. Let's analyze each component:
 
-### 1.2 線路 (Wires) - 數據的載體
+### 1.2 Wires - Data Carriers
 
-**w_a, w_b, w_c** 代表三條「線路」：
-- **w_a**：左輸入線 (Left wire)
-- **w_b**：右輸入線 (Right wire)  
-- **w_c**：輸出線 (Output wire)
+**w_a, w_b, w_c** represent three "wires":
+- **w_a**: Left input wire
+- **w_b**: Right input wire  
+- **w_c**: Output wire
 
-**直觀理解**：
-想像一個有兩個輸入端和一個輸出端的電子元件，w_a 和 w_b 是輸入的數值，w_c 是輸出的數值。
+**Intuitive Understanding**:
+Imagine an electronic component with two input terminals and one output terminal. w_a and w_b are the input values, w_c is the output value.
 
-### 1.3 選擇子 (Selectors) - 電路的配置開關
+### 1.3 Selectors - Circuit Configuration Switches
 
-**q_L, q_R, q_O, q_M, q_C** 是五個「選擇子」：
-- **q_L**：左輸入選擇子 (Left selector)
-- **q_R**：右輸入選擇子 (Right selector)
-- **q_O**：輸出選擇子 (Output selector)
-- **q_M**：乘法選擇子 (Multiplication selector)
-- **q_C**：常數選擇子 (Constant selector)
+**q_L, q_R, q_O, q_M, q_C** are five "selectors":
+- **q_L**: Left selector
+- **q_R**: Right selector
+- **q_O**: Output selector
+- **q_M**: Multiplication selector
+- **q_C**: Constant selector
 
-**關鍵洞察**：選擇子是「配置參數」，由電路設計者預先設定，而線路值是運行時的「變數」。
+**Key Insight**: Selectors are "configuration parameters" set by the circuit designer beforehand, while wire values are runtime "variables."
 
 ---
 
-## 第二課：成為電路設計師
+## Lesson 2: Becoming a Circuit Designer
 
-### 2.1 設計加法門 (Addition Gate)
+### 2.1 Designing an Addition Gate
 
-**目標**：實現 a + b = c
+**Goal**: Implement a + b = c
 
-**配置選擇子**：
-- q_L = 1 (啟用左輸入)
-- q_R = 1 (啟用右輸入)  
-- q_O = -1 (輸出取負號)
-- q_M = 0 (關閉乘法)
-- q_C = 0 (無常數項)
+**Configure Selectors**:
+- q_L = 1 (enable left input)
+- q_R = 1 (enable right input)  
+- q_O = -1 (negate output)
+- q_M = 0 (disable multiplication)
+- q_C = 0 (no constant term)
 
-**驗證**：
+**Verification**:
 ```
 1 * w_a + 1 * w_b + (-1) * w_c + 0 * (w_a * w_b) + 0 = 0
 => w_a + w_b - w_c = 0
 => w_a + w_b = w_c ✓
 ```
 
-**練習 2.1**
-如果 w_a = 5, w_b = 3，那麼 w_c 應該等於多少才能滿足約束？
+**Exercise 2.1**
+If w_a = 5, w_b = 3, what should w_c equal to satisfy the constraint?
 
 <details>
-<summary>答案</summary>
+<summary>Answer</summary>
 
-w_c = 8，因為 5 + 3 = 8
+w_c = 8, because 5 + 3 = 8
 
 </details>
 
-### 2.2 設計乘法門 (Multiplication Gate)
+### 2.2 Designing a Multiplication Gate
 
-**目標**：實現 a × b = c
+**Goal**: Implement a × b = c
 
-**配置選擇子**：
+**Configure Selectors**:
 - q_L = 0
 - q_R = 0
 - q_O = -1
-- q_M = 1 (啟用乘法項)
+- q_M = 1 (enable multiplication term)
 - q_C = 0
 
-**驗證**：
+**Verification**:
 ```
 0 * w_a + 0 * w_b + (-1) * w_c + 1 * (w_a * w_b) + 0 = 0
 => -w_c + w_a * w_b = 0
 => w_a * w_b = w_c ✓
 ```
 
-### 2.3 設計常數門 (Constant Gate)
+### 2.3 Designing a Constant Gate
 
-**目標**：實現 a = 5
+**Goal**: Implement a = 5
 
-**配置選擇子**：
+**Configure Selectors**:
 - q_L = 1
 - q_R = 0
 - q_O = 0
 - q_M = 0
-- q_C = -5 (常數值取負號)
+- q_C = -5 (negate constant value)
 
-**驗證**：
+**Verification**:
 ```
 1 * w_a + 0 * w_b + 0 * w_c + 0 * (w_a * w_b) + (-5) = 0
 => w_a - 5 = 0
 => w_a = 5 ✓
 ```
 
-### 2.4 設計自定義門
+### 2.4 Designing Custom Gates
 
-**目標**：實現 a × b + a = c
+**Goal**: Implement a × b + a = c
 
-**配置選擇子**：
-- q_L = 1 (包含 a 的線性項)
+**Configure Selectors**:
+- q_L = 1 (include linear term a)
 - q_R = 0
 - q_O = -1
-- q_M = 1 (包含 a × b 項)
+- q_M = 1 (include a × b term)
 - q_C = 0
 
-**驗證**：
+**Verification**:
 ```
 1 * w_a + 0 * w_b + (-1) * w_c + 1 * (w_a * w_b) + 0 = 0
 => w_a - w_c + w_a * w_b = 0
 => w_a * w_b + w_a = w_c ✓
 ```
 
-**練習 2.2**
-設計一個門來實現：2a + 3b = c
+**Exercise 2.2**
+Design a gate to implement: 2a + 3b = c
 
 <details>
-<summary>提示</summary>
+<summary>Hint</summary>
 
-需要使用 q_L = 2, q_R = 3, q_O = -1
+Need to use q_L = 2, q_R = 3, q_O = -1
 
 </details>
 
 ---
 
-## 第三課：R1CS vs PLONK Gate
+## Lesson 3: R1CS vs PLONK Gate
 
-### 3.1 R1CS 的限制
+### 3.1 Limitations of R1CS
 
-在 R1CS (Rank-1 Constraint System) 中，每個約束都是：
+In R1CS (Rank-1 Constraint System), each constraint is:
 ```
 (A₁w₁ + A₂w₂ + ... + Aₙwₙ) * (B₁w₁ + B₂w₂ + ... + Bₙwₙ) = C₁w₁ + C₂w₂ + ... + Cₙwₙ
 ```
 
-簡化形式：**A · B = C**
+Simplified form: **A · B = C**
 
-### 3.2 R1CS 的問題
+### 3.2 Problems with R1CS
 
-**表達能力有限**：
-- 只能表達雙線性關係
-- 需要多個約束來表達簡單運算
+**Limited Expressiveness**:
+- Can only express bilinear relationships
+- Requires multiple constraints for simple operations
 
-**例子**：計算 a + b + c
-- R1CS 需要引入中間變數：
+**Example**: Computing a + b + c
+- R1CS needs intermediate variables:
   - temp = a + b
   - result = temp + c
-- 需要 2 個約束和 1 個額外變數
+- Requires 2 constraints and 1 additional variable
 
-### 3.3 PLONK Gate 的優勢
+### 3.3 Advantages of PLONK Gates
 
-**更豐富的表達能力**：
-- 一個門可以同時包含加法和乘法
-- 更少的約束數量
-- 更直觀的電路設計
+**Richer Expressiveness**:
+- One gate can include both addition and multiplication
+- Fewer constraint count
+- More intuitive circuit design
 
-**對比表**：
+**Comparison Table**:
 
-| 運算 | R1CS 約束數 | PLONK 門數 |
-|------|-------------|------------|
+| Operation | R1CS Constraints | PLONK Gates |
+|-----------|------------------|-------------|
 | a + b | 1 | 1 |
 | a × b | 1 | 1 |
 | a + b + c | 2 | 1 |
 | a × b + c | 2 | 1 |
 | a × b + a | 2 | 1 |
 
-### 3.4 靈活性體現
+### 3.4 Flexibility Demonstration
 
-PLONK 門可以在一個約束中表達：
-- 線性組合：q_L·a + q_R·b + q_O·c
-- 雙線性項：q_M·(a×b)
-- 常數項：q_C
+PLONK gates can express in one constraint:
+- Linear combinations: q_L·a + q_R·b + q_O·c
+- Bilinear terms: q_M·(a×b)
+- Constant terms: q_C
 
-這使得電路設計更加靈活和高效。
+This makes circuit design more flexible and efficient.
 
 ---
 
-## 第四課：實戰演練
+## Lesson 4: Practical Exercises
 
-### 4.1 設計平方門
+### 4.1 Designing a Square Gate
 
-**目標**：實現 a² = c
+**Goal**: Implement a² = c
 
-**思路**：令 w_a = w_b = a，使用乘法門
+**Approach**: Let w_a = w_b = a, use multiplication gate
 
-**配置**：
+**Configuration**:
 - q_L = 0
 - q_R = 0  
 - q_O = -1
 - q_M = 1
 - q_C = 0
 
-**約束**：w_a × w_a = w_c
+**Constraint**: w_a × w_a = w_c
 
-### 4.2 設計多項式求值
+### 4.2 Designing Polynomial Evaluation
 
-**目標**：實現 f(x) = x² + 2x + 1 在某點的求值
+**Goal**: Implement f(x) = x² + 2x + 1 evaluation at some point
 
-這需要多個門的組合：
-1. 門1：計算 x² 
-2. 門2：計算 2x
-3. 門3：計算 x² + 2x + 1
+This requires combining multiple gates:
+1. Gate 1: Compute x² 
+2. Gate 2: Compute 2x
+3. Gate 3: Compute x² + 2x + 1
 
-**練習 4.1**
-為上述多項式求值設計具體的門配置。
+**Exercise 4.1**
+Design specific gate configurations for the above polynomial evaluation.
 
-### 4.3 布爾約束
+### 4.3 Boolean Constraints
 
-**目標**：約束 a 必須是 0 或 1
+**Goal**: Constrain a to be 0 or 1
 
-**思路**：使用 a × (a - 1) = 0
+**Approach**: Use a × (a - 1) = 0
 
-這意味著 a = 0 或 a = 1
+This means a = 0 or a = 1
 
-**配置**：
+**Configuration**:
 - q_L = -1
 - q_R = 0
 - q_O = 0  
 - q_M = 1
 - q_C = 0
 
-約束：w_a × w_a - w_a = 0
+Constraint: w_a × w_a - w_a = 0
 
 ---
 
-## 模組總結
+## Module Summary
 
-通過本模組，我們深入理解了：
+Through this module, we deeply understood:
 
-1. **PLONK 核心公式**的每個組件及其作用
-2. **選擇子配置**如何決定門的行為
-3. **電路設計**的基本技巧和模式
-4. **PLONK vs R1CS** 的優勢對比
+1. **PLONK Core Formula** components and their roles
+2. **Selector Configuration** determining gate behavior
+3. **Circuit Design** basic techniques and patterns
+4. **PLONK vs R1CS** advantage comparison
 
-### 核心洞察
+### Core Insights
 
-- PLONK 門是一個**可程式化的約束模板**
-- 通過調整選擇子，可以實現各種算術運算
-- 單個 PLONK 門比 R1CS 約束更具表達力
+- PLONK gates are **programmable constraint templates**
+- By adjusting selectors, various arithmetic operations can be implemented
+- Single PLONK gates are more expressive than R1CS constraints
 
-## 自我檢驗
+## Self-Assessment
 
-在進入下一模組前，請確認您能夠：
-- [ ] 解釋 PLONK 核心公式中每個項的含義
-- [ ] 設計基本的算術門（加法、乘法、常數）
-- [ ] 理解選擇子如何控制門的行為
-- [ ] 對比 PLONK 和 R1CS 的差異
+Before proceeding to the next module, confirm you can:
+- [ ] Explain the meaning of each term in PLONK's core formula
+- [ ] Design basic arithmetic gates (addition, multiplication, constant)
+- [ ] Understand how selectors control gate behavior
+- [ ] Compare differences between PLONK and R1CS
 
-## 下一步
+## Next Steps
 
-掌握了單個門的設計後，我們需要學習如何將多個門「連接」起來形成完整的電路。讓我們進入[第二模組：連接電路 - 置換參數的魔法](../module_2_permutation/)！
+Having mastered single gate design, we need to learn how to "connect" multiple gates to form complete circuits. Let's proceed to [Module 2: Connecting Circuits - The Magic of Permutation Arguments](../module_2_permutation/)!

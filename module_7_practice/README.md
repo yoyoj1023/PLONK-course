@@ -1,66 +1,66 @@
-# 最終模組：動手實作 - 理論與實踐 (Hands-on Lab)
+# Final Module: Hands-on Implementation - Theory and Practice (Hands-on Lab)
 
-## 模組目標
-將理論知識轉化為實際技能。
+## Module Objective
+Transform theoretical knowledge into practical skills.
 
-## 心智模型
-從「紙上談兵」到「實戰演練」，真正掌握 PLONK 的精髓。
+## Mental Model
+From "armchair strategizing" to "battlefield practice," truly master the essence of PLONK.
 
 ---
 
-## 第一課：電路設計練習
+## Lesson 1: Circuit Design Exercises
 
-### 1.1 簡單電路：平方根檢查
+### 1.1 Simple Circuit: Square Root Check
 
-**問題**：證明你知道 x 使得 x² = y，但不透露 x 的值
+**Problem**: Prove you know x such that x² = y, without revealing x's value
 
-**電路設計**：
+**Circuit Design**:
 ```
-門1: x × x = y
+Gate 1: x × x = y
 ```
 
-**PLONK 配置**：
+**PLONK Configuration**:
 - q_L = 0
 - q_R = 0  
 - q_O = -1
 - q_M = 1
 - q_C = 0
 
-**線路值**（假設 x = 5, y = 25）：
+**Wire Values** (assume x = 5, y = 25):
 - w_a = 5
 - w_b = 5
 - w_c = 25
 
-**練習 1.1**：為 x = 7, y = 49 填寫線路值。
+**Exercise 1.1**: Fill in wire values for x = 7, y = 49.
 
-### 1.2 中等電路：MiMC 哈希函數
+### 1.2 Medium Circuit: MiMC Hash Function
 
-**MiMC 算法**：
+**MiMC Algorithm**:
 ```
 for i in range(rounds):
     x = (x + key + constants[i])^3
 return x
 ```
 
-**電路分解**（單輪）：
+**Circuit Decomposition** (single round):
 ```
-門1: temp1 = x + key + c_i
-門2: temp2 = temp1 × temp1  
-門3: result = temp2 × temp1
+Gate 1: temp1 = x + key + c_i
+Gate 2: temp2 = temp1 × temp1  
+Gate 3: result = temp2 × temp1
 ```
 
-**複製約束**：
-- 門1的輸出 = 門2的左輸入
-- 門1的輸出 = 門3的右輸入
-- 門2的輸出 = 門3的左輸入
+**Copy Constraints**:
+- Gate 1's output = Gate 2's left input
+- Gate 1's output = Gate 3's right input
+- Gate 2's output = Gate 3's left input
 
-**練習 1.2**：為 3 輪 MiMC 設計完整電路。
+**Exercise 1.2**: Design complete circuit for 3-round MiMC.
 
-### 1.3 複雜電路：Fibonacci 數列
+### 1.3 Complex Circuit: Fibonacci Sequence
 
-**問題**：證明第 n 個 Fibonacci 數是 F_n
+**Problem**: Prove the n-th Fibonacci number is F_n
 
-**電路設計**：
+**Circuit Design**:
 ```
 F_0 = 0
 F_1 = 1
@@ -68,47 +68,47 @@ for i from 2 to n:
     F_i = F_{i-1} + F_{i-2}
 ```
 
-**門的設計**：
+**Gate Design**:
 ```
-門i: w_a[i] + w_b[i] = w_c[i]
+Gate i: w_a[i] + w_b[i] = w_c[i]
 ```
 
-其中：
+Where:
 - w_a[i] = F_{i-2}
 - w_b[i] = F_{i-1}  
 - w_c[i] = F_i
 
-**複製約束**：
+**Copy Constraints**:
 - w_c[i] = w_b[i+1]
 - w_b[i] = w_a[i+1]
 
-**練習 1.3**：為計算 F_10 設計完整電路，並列出所有複製約束。
+**Exercise 1.3**: Design complete circuit for computing F_10 and list all copy constraints.
 
 ---
 
-## 第二課：多項式構造實戰
+## Lesson 2: Polynomial Construction Practice
 
-### 2.1 手算線路多項式
+### 2.1 Hand-calculating Wire Polynomials
 
-**電路**：
+**Circuit**:
 ```
-門1: 2 + 3 = 5
-門2: 5 × 4 = 20
+Gate 1: 2 + 3 = 5
+Gate 2: 5 × 4 = 20
 ```
 
-**域設置**：使用 F_17，ω = 3（因為 3² = 9 ≠ 1, 3⁴ = 81 ≡ 13 ≠ 1, 但 3^8 ≡ 1）
+**Field Setup**: Use F_17, ω = 3 (since 3² = 9 ≠ 1, 3⁴ = 81 ≡ 13 ≠ 1, but 3^8 ≡ 1)
 
-等一下，讓我們用更簡單的設置：F_5, ω = 2（因為 2⁴ = 16 ≡ 1 (mod 5)）
+Wait, let's use simpler setup: F_5, ω = 2 (since 2⁴ = 16 ≡ 1 (mod 5))
 
-**線路值**：
+**Wire Values**:
 - w_a = [2, 5]  
 - w_b = [3, 4]
 - w_c = [5, 20] ≡ [5, 0] (mod 5)
 
-**多項式插值**：
-目標：找到 w_a(X) 使得 w_a(ω⁰) = w_a(1) = 2, w_a(ω¹) = w_a(2) = 5
+**Polynomial Interpolation**:
+Goal: Find w_a(X) such that w_a(ω⁰) = w_a(1) = 2, w_a(ω¹) = w_a(2) = 5
 
-使用拉格朗日插值：
+Using Lagrange interpolation:
 ```
 w_a(X) = 2 × (X-2)/(1-2) + 5 × (X-1)/(2-1)
        = 2 × (X-2)/(-1) + 5 × (X-1)/1
@@ -117,69 +117,69 @@ w_a(X) = 2 × (X-2)/(1-2) + 5 × (X-1)/(2-1)
        = 3X - 1
 ```
 
-**驗證**：
+**Verification**:
 - w_a(1) = 3×1 - 1 = 2 ✓
 - w_a(2) = 3×2 - 1 = 5 ✓
 
-**練習 2.1**：計算 w_b(X) 和 w_c(X)。
+**Exercise 2.1**: Compute w_b(X) and w_c(X).
 
-### 2.2 約束多項式構造
+### 2.2 Constraint Polynomial Construction
 
-**選擇子設置**：
-- 門1（加法）：q_L=1, q_R=1, q_O=-1, q_M=0, q_C=0
-- 門2（乘法）：q_L=0, q_R=0, q_O=-1, q_M=1, q_C=0
+**Selector Setup**:
+- Gate 1 (addition): q_L=1, q_R=1, q_O=-1, q_M=0, q_C=0
+- Gate 2 (multiplication): q_L=0, q_R=0, q_O=-1, q_M=1, q_C=0
 
-**選擇子多項式**：
+**Selector Polynomials**:
 ```
 q_L(X) = 1 × (X-2)/(1-2) + 0 × (X-1)/(2-1) = -(X-2) = -X+2
 q_M(X) = 0 × (X-2)/(1-2) + 1 × (X-1)/(2-1) = X-1
 ```
 
-**約束多項式**：
+**Constraint Polynomial**:
 ```
 P(X) = q_L(X)w_a(X) + q_R(X)w_b(X) + q_O(X)w_c(X) + q_M(X)w_a(X)w_b(X) + q_C(X)
 ```
 
-**練習 2.2**：計算 P(1) 和 P(2)，驗證它們都等於 0。
+**Exercise 2.2**: Compute P(1) and P(2), verify they both equal 0.
 
-### 2.3 商多項式計算
+### 2.3 Quotient Polynomial Computation
 
-**零化多項式**：
+**Vanishing Polynomial**:
 ```
 Z_H(X) = (X-1)(X-2) = X² - 3X + 2
 ```
 
-**商多項式**：
+**Quotient Polynomial**:
 ```
 t(X) = P(X) / Z_H(X)
 ```
 
-由於 P(1) = P(2) = 0，P(X) 必定能被 Z_H(X) 整除。
+Since P(1) = P(2) = 0, P(X) must be divisible by Z_H(X).
 
-**練習 2.3**：執行多項式長除法，計算 t(X)。
+**Exercise 2.3**: Perform polynomial long division to compute t(X).
 
 ---
 
-## 第三課：程式碼庫探索
+## Lesson 3: Code Base Exploration
 
-### 3.1 Plonky2 原始碼結構
+### 3.1 Plonky2 Source Code Structure
 
-**核心模塊**：
+**Core Modules**:
 ```
 plonky2/
-├── field/           # 有限體實現
-├── fri/             # FRI 承諾方案
-├── gates/           # 各種門的實現
-├── hash/            # 哈希函數
+├── field/           # Finite field implementation
+├── fri/             # FRI commitment scheme
+├── gates/           # Various gate implementations
+├── hash/            # Hash functions
 ├── iop/             # IOP (Interactive Oracle Proof)
-├── plonk/           # PLONK 協議核心
-├── poly/            # 多項式運算
-└── util/            # 工具函數
+├── plonk/           # PLONK protocol core
+├── poly/            # Polynomial operations
+└── util/            # Utility functions
 ```
 
-### 3.2 門的實現分析
+### 3.2 Gate Implementation Analysis
 
-**找到加法門**：
+**Find Addition Gate**:
 ```rust
 // plonky2/src/gates/arithmetic_gate.rs
 pub struct ArithmeticGate {
@@ -188,58 +188,58 @@ pub struct ArithmeticGate {
 
 impl Gate for ArithmeticGate {
     fn eval_unfiltered(&self, vars: EvaluationVars) -> Vec<F> {
-        // 實現 q_L * w_a + q_R * w_b + q_O * w_c + q_M * (w_a * w_b) + q_C
+        // Implement q_L * w_a + q_R * w_b + q_O * w_c + q_M * (w_a * w_b) + q_C
     }
 }
 ```
 
-**練習 3.1**：閱讀 `arithmetic_gate.rs`，找到對應我們學習的 PLONK 公式的程式碼。
+**Exercise 3.1**: Read `arithmetic_gate.rs`, find code corresponding to the PLONK formula we learned.
 
-### 3.3 多項式承諾的實現
+### 3.3 Polynomial Commitment Implementation
 
-**FRI 實現**：
+**FRI Implementation**:
 ```rust
 // plonky2/src/fri/prover.rs
 pub fn prove(&self, polynomial: &Polynomial) -> FriProof {
-    // FRI 證明生成
+    // FRI proof generation
 }
 
 // plonky2/src/fri/verifier.rs  
 pub fn verify(&self, proof: &FriProof) -> bool {
-    // FRI 證明驗證
+    // FRI proof verification
 }
 ```
 
-**練習 3.2**：追蹤一個多項式從承諾到打開的完整流程。
+**Exercise 3.2**: Trace complete flow of a polynomial from commitment to opening.
 
-### 3.4 置換參數的實現
+### 3.4 Permutation Argument Implementation
 
-**置換多項式**：
+**Permutation Polynomial**:
 ```rust
 // plonky2/src/plonk/permutation_argument.rs
 pub fn compute_permutation_z_polys(
     gate_constraints: &[GateConstraint],
     permutation: &Permutation,
 ) -> Vec<Polynomial> {
-    // 計算置換多項式 Z(X)
+    // Compute permutation polynomial Z(X)
 }
 ```
 
-**練習 3.3**：理解置換多項式的具體計算過程。
+**Exercise 3.3**: Understand the specific computation process of permutation polynomials.
 
 ---
 
-## 第四課：使用高階語言
+## Lesson 4: Using High-level Languages
 
-### 4.1 Circom 實現
+### 4.1 Circom Implementation
 
-**安裝 Circom**：
+**Install Circom**:
 ```bash
 npm install -g circom
 npm install -g snarkjs
 ```
 
-**簡單電路**：
+**Simple Circuit**:
 ```javascript
 // square.circom
 pragma circom 2.0.0;
@@ -254,24 +254,24 @@ template Square() {
 component main = Square();
 ```
 
-**編譯和測試**：
+**Compile and Test**:
 ```bash
 circom square.circom --r1cs --wasm --sym
 echo '{"x": "5"}' > input.json
 node square_js/generate_witness.js square_js/square.wasm input.json witness.wtns
 ```
 
-**練習 4.1**：實現 MiMC 哈希的 Circom 版本。
+**Exercise 4.1**: Implement MiMC hash Circom version.
 
-### 4.2 Noir 實現
+### 4.2 Noir Implementation
 
-**安裝 Noir**：
+**Install Noir**:
 ```bash
 curl -L noirup.dev | bash
 noirup
 ```
 
-**簡單電路**：
+**Simple Circuit**:
 ```rust
 // main.nr
 fn main(x: Field, y: pub Field) {
@@ -279,7 +279,7 @@ fn main(x: Field, y: pub Field) {
 }
 ```
 
-**測試**：
+**Testing**:
 ```bash
 nargo check
 nargo test
@@ -287,17 +287,17 @@ nargo prove
 nargo verify
 ```
 
-**練習 4.2**：用 Noir 實現 Fibonacci 數列驗證。
+**Exercise 4.2**: Implement Fibonacci sequence verification using Noir.
 
-### 4.3 Plonky2 直接使用
+### 4.3 Direct Plonky2 Usage
 
-**Rust 項目設置**：
+**Rust Project Setup**:
 ```toml
 [dependencies]
 plonky2 = "0.1"
 ```
 
-**簡單電路**：
+**Simple Circuit**:
 ```rust
 use plonky2::plonk::circuit_builder::CircuitBuilder;
 use plonky2::field::goldilocks_field::GoldilocksField;
@@ -305,36 +305,36 @@ use plonky2::field::goldilocks_field::GoldilocksField;
 fn main() {
     let mut builder = CircuitBuilder::<GoldilocksField, 2>::new();
     
-    // 添加輸入
+    // Add inputs
     let x = builder.add_virtual_target();
     let y = builder.add_virtual_target();
     
-    // 添加約束：x * x = y
+    // Add constraint: x * x = y
     let x_squared = builder.mul(x, x);
     builder.connect(x_squared, y);
     
-    // 設為公開輸入
+    // Set as public input
     builder.register_public_input(y);
     
-    // 構建電路
+    // Build circuit
     let data = builder.build::<C>();
 }
 ```
 
-**練習 4.3**：實現一個簡單的範圍檢查電路。
+**Exercise 4.3**: Implement a simple range check circuit.
 
 ---
 
-## 第五課：性能分析與優化
+## Lesson 5: Performance Analysis and Optimization
 
-### 5.1 基準測試
+### 5.1 Benchmarking
 
-**測試電路**：
-- 小型：100 個門
-- 中型：10,000 個門  
-- 大型：1,000,000 個門
+**Test Circuits**:
+- Small: 100 gates
+- Medium: 10,000 gates  
+- Large: 1,000,000 gates
 
-**指標測量**：
+**Metric Measurement**:
 ```rust
 use std::time::Instant;
 
@@ -351,157 +351,157 @@ println!("Verify time: {:?}", verify_time);
 println!("Proof size: {} bytes", proof.len());
 ```
 
-**練習 5.1**：測試不同電路大小的性能表現。
+**Exercise 5.1**: Test performance for different circuit sizes.
 
-### 5.2 瓶頸識別
+### 5.2 Bottleneck Identification
 
-**常見瓶頸**：
-1. **FFT 計算**：多項式運算的主要成本
-2. **哈希計算**：Merkle tree 構建
-3. **記憶體訪問**：大型多項式的存取
+**Common Bottlenecks**:
+1. **FFT Computation**: Main cost of polynomial operations
+2. **Hash Computation**: Merkle tree construction
+3. **Memory Access**: Large polynomial access
 
-**分析工具**：
+**Analysis Tools**:
 ```bash
-# CPU 分析
+# CPU profiling
 perf record ./your_program
 perf report
 
-# 記憶體分析  
+# Memory profiling  
 valgrind --tool=massif ./your_program
 ```
 
-**練習 5.2**：分析你的電路的性能瓶頸。
+**Exercise 5.2**: Analyze performance bottlenecks in your circuit.
 
-### 5.3 優化策略
+### 5.3 Optimization Strategies
 
-**並行化**：
+**Parallelization**:
 ```rust
 use rayon::prelude::*;
 
-// 並行 FFT
+// Parallel FFT
 let coeffs: Vec<_> = (0..n).into_par_iter()
     .map(|i| compute_coeff(i))
     .collect();
 ```
 
-**記憶體優化**：
+**Memory Optimization**:
 ```rust
-// 流式處理大型多項式
+// Stream processing of large polynomials
 for chunk in polynomial.chunks(CHUNK_SIZE) {
     process_chunk(chunk);
 }
 ```
 
-**練習 5.3**：實現一個優化版本的電路，並比較性能。
+**Exercise 5.3**: Implement optimized version of circuit and compare performance.
 
 ---
 
-## 第六課：實際應用開發
+## Lesson 6: Real Application Development
 
-### 6.1 零知識投票系統
+### 6.1 Zero-Knowledge Voting System
 
-**需求**：
-- 用戶可以秘密投票
-- 任何人可以驗證投票總數
-- 無法追蹤個人投票
+**Requirements**:
+- Users can vote secretly
+- Anyone can verify vote totals
+- Cannot trace individual votes
 
-**電路設計**：
+**Circuit Design**:
 ```
-// 每個投票
-輸入：voter_id (private), vote (private), nullifier (public)
-約束：
-1. vote ∈ {0, 1}  // 範圍檢查
-2. nullifier = hash(voter_id, election_id)  // 防重投
-3. 公開 vote 的承諾
+// Each vote
+Input: voter_id (private), vote (private), nullifier (public)
+Constraints:
+1. vote ∈ {0, 1}  // Range check
+2. nullifier = hash(voter_id, election_id)  // Prevent double voting
+3. Publicly commit to vote
 ```
 
-**練習 6.1**：實現完整的投票電路。
+**Exercise 6.1**: Implement complete voting circuit.
 
-### 6.2 隱私保護的身份驗證
+### 6.2 Privacy-Preserving Identity Verification
 
-**需求**：
-- 證明年齡 ≥ 18
-- 不透露具體年齡
-- 防止重放攻擊
+**Requirements**:
+- Prove age ≥ 18
+- Don't reveal specific age
+- Prevent replay attacks
 
-**電路設計**：
+**Circuit Design**:
 ```
-輸入：age (private), threshold=18 (public), nonce (public)
-約束：
+Input: age (private), threshold=18 (public), nonce (public)
+Constraints:
 1. age ≥ threshold
-2. 輸出 hash(age, nonce)
+2. Output hash(age, nonce)
 ```
 
-**練習 6.2**：添加額外約束（如年齡 ≤ 120）。
+**Exercise 6.2**: Add additional constraints (like age ≤ 120).
 
-### 6.3 零知識機器學習
+### 6.3 Zero-Knowledge Machine Learning
 
-**需求**：
-- 證明 ML 模型的預測結果
-- 不透露模型參數
-- 保護輸入數據隱私
+**Requirements**:
+- Prove ML model prediction results
+- Don't reveal model parameters
+- Protect input data privacy
 
-**電路設計**：
+**Circuit Design**:
 ```
-輸入：features (private), weights (private), prediction (public)
-約束：
+Input: features (private), weights (private), prediction (public)
+Constraints:
 1. prediction = model(features, weights)
-2. 模型計算的正確性
+2. Correctness of model computation
 ```
 
-**練習 6.3**：實現一個簡單的線性回歸證明。
+**Exercise 6.3**: Implement simple linear regression proof.
 
 ---
 
-## 第七課：生產環境考慮
+## Lesson 7: Production Environment Considerations
 
-### 7.1 安全性檢查清單
+### 7.1 Security Checklist
 
-**可信設置**：
-- [ ] 使用經過審計的可信設置
-- [ ] 驗證設置參數的正確性
-- [ ] 確保設置過程的透明性
+**Trusted Setup**:
+- [ ] Use audited trusted setup
+- [ ] Verify correctness of setup parameters
+- [ ] Ensure transparency of setup process
 
-**實現安全**：
-- [ ] 使用經過審計的庫
-- [ ] 防止旁道攻擊
-- [ ] 安全的隨機數生成
+**Implementation Security**:
+- [ ] Use audited libraries
+- [ ] Prevent side-channel attacks
+- [ ] Secure random number generation
 
-**協議安全**：
-- [ ] 正確的域參數選擇
-- [ ] 適當的安全參數
-- [ ] 防止常見攻擊向量
+**Protocol Security**:
+- [ ] Correct field parameter selection
+- [ ] Appropriate security parameters
+- [ ] Prevent common attack vectors
 
-### 7.2 可擴展性設計
+### 7.2 Scalability Design
 
-**批量處理**：
+**Batch Processing**:
 ```rust
-// 批量驗證多個證明
+// Batch verify multiple proofs
 fn batch_verify(proofs: &[Proof]) -> bool {
     let combined = combine_proofs(proofs);
     verify_single(combined)
 }
 ```
 
-**遞歸證明**：
+**Recursive Proofs**:
 ```rust
-// 證明其他證明的有效性
+// Prove validity of other proofs
 fn recursive_verify(inner_proof: Proof) -> Proof {
-    // 構建驗證電路
-    // 生成包裝證明
+    // Build verification circuit
+    // Generate wrapper proof
 }
 ```
 
-**練習 7.1**：實現一個支持批量驗證的系統。
+**Exercise 7.1**: Implement system supporting batch verification.
 
-### 7.3 部署和監控
+### 7.3 Deployment and Monitoring
 
-**部署檢查**：
-- 性能基準測試
-- 記憶體使用監控
-- 錯誤處理機制
+**Deployment Checks**:
+- Performance benchmarking
+- Memory usage monitoring
+- Error handling mechanisms
 
-**監控指標**：
+**Monitoring Metrics**:
 ```rust
 struct Metrics {
     prove_time_avg: Duration,
@@ -511,48 +511,48 @@ struct Metrics {
 }
 ```
 
-**練習 7.2**：設計一個完整的監控系統。
+**Exercise 7.2**: Design complete monitoring system.
 
 ---
 
-## 模組總結
+## Module Summary
 
-通過本模組的實踐，您已經：
+Through this module's practice, you have:
 
-1. **親手設計**了各種複雜度的 PLONK 電路
-2. **深入探索**了實際的 ZK 系統實現
-3. **使用高階語言**快速構建 ZK 應用
-4. **分析和優化**了系統性能
-5. **開發實際應用**並考慮生產環境需求
+1. **Hand-designed** PLONK circuits of various complexities
+2. **Deep explored** actual ZK system implementations
+3. **Used high-level languages** to quickly build ZK applications
+4. **Analyzed and optimized** system performance
+5. **Developed real applications** considering production environment requirements
 
-### 核心技能
+### Core Skills
 
-- 電路設計和約束分析
-- 多項式操作和性能優化  
-- 實際系統的實現和部署
-- 安全性考慮和最佳實踐
+- Circuit design and constraint analysis
+- Polynomial operations and performance optimization  
+- Implementation and deployment of real systems
+- Security considerations and best practices
 
-## 最終檢驗
+## Final Assessment
 
-確認您現在能夠：
-- [ ] 獨立設計中等複雜度的 ZK 電路
-- [ ] 閱讀和理解 ZK 系統的原始碼
-- [ ] 使用主流工具開發 ZK 應用
-- [ ] 分析和優化 ZK 系統的性能
-- [ ] 考慮生產環境的各種需求
+Confirm you can now:
+- [ ] Independently design medium-complexity ZK circuits
+- [ ] Read and understand ZK system source code
+- [ ] Use mainstream tools to develop ZK applications
+- [ ] Analyze and optimize ZK system performance
+- [ ] Consider various production environment requirements
 
-## 恭喜畢業！
+## Congratulations on Graduation!
 
-您現在已經完全掌握了 PLONK 協議的精髓，具備了：
-- 深入的理論理解
-- 扎實的實踐技能
-- 系統性的思維方式
-- 解決實際問題的能力
+You have now completely mastered the essence of the PLONK protocol, possessing:
+- Deep theoretical understanding
+- Solid practical skills
+- Systematic thinking approach
+- Ability to solve real problems
 
-準備好探索更廣闊的零知識證明世界了！下一步，您可以：
-- 深入研究 Plonky3 和最新發展
-- 探索其他 ZK 系統（STARKs, Nova 等）
-- 開發自己的 ZK 應用
-- 為開源 ZK 項目做出貢獻
+Ready to explore the broader world of zero-knowledge proofs! Next, you can:
+- Deep dive into Plonky3 and latest developments
+- Explore other ZK systems (STARKs, Nova, etc.)
+- Develop your own ZK applications
+- Contribute to open-source ZK projects
 
-**零知識證明的未來在您手中！** 🚀
+**The future of zero-knowledge proofs is in your hands!** 🚀

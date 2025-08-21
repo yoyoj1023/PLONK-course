@@ -1,286 +1,286 @@
-# 第三模組：語言轉換 - 從電路到多項式 (From Circuits to Polynomials)
+# Module 3: Language Translation - From Circuits to Polynomials (From Circuits to Polynomials)
 
-## 模組目標
-理解 PLONK 如何將整個電路的約束「打包」進幾個多項式恆等式中。
+## Module Objective
+Understand how PLONK "packages" all circuit constraints into several polynomial identities.
 
-## 心智模型
-將離散的、一個個的門約束，轉化為連續的、光滑的多項式曲線。
+## Mental Model
+Transform discrete, individual gate constraints into continuous, smooth polynomial curves.
 
 ---
 
-## 第一課：視角提升
+## Lesson 1: Perspective Elevation
 
-### 1.1 從離散到連續
+### 1.1 From Discrete to Continuous
 
-在前兩個模組中，我們思考的是「第i個門」的約束。現在我們要提升視角：
+In the previous two modules, we thought about "the i-th gate's" constraints. Now we elevate our perspective:
 
-**舊視角**：
-- 第1門：q_L[1] * w_a[1] + ... = 0
-- 第2門：q_L[2] * w_a[2] + ... = 0
+**Old Perspective**:
+- Gate 1: q_L[1] * w_a[1] + ... = 0
+- Gate 2: q_L[2] * w_a[2] + ... = 0
 - ...
 
-**新視角**：
-- w_a 不再是數組，而是一個**多項式** w_a(X)
-- q_L 也是一個多項式 q_L(X)
-- 在特定點 ω^i 上，w_a(ω^i) = w_a[i]
+**New Perspective**:
+- w_a is no longer an array, but a **polynomial** w_a(X)
+- q_L is also a polynomial q_L(X)
+- At specific point ω^i, w_a(ω^i) = w_a[i]
 
-### 1.2 域的根 (Roots of Unity)
+### 1.2 Roots of Unity
 
-**關鍵工具**：使用 n 次單位根 ω
+**Key Tool**: Use n-th roots of unity ω
 
-性質：
+Properties:
 - ω^n = 1
-- ω^0, ω^1, ω^2, ..., ω^(n-1) 是 n 個不同的值
-- 這些值形成一個循環群
+- ω^0, ω^1, ω^2, ..., ω^(n-1) are n distinct values
+- These values form a cyclic group
 
-**直觀理解**：
-想像一個有 n 個刻度的圓形表盤，ω 是從0點到第一個刻度的旋轉角度。
+**Intuitive Understanding**:
+Imagine a circular dial with n markings, ω is the rotation angle from the 0 mark to the first marking.
 
-### 1.3 多項式插值的應用
+### 1.3 Application of Polynomial Interpolation
 
-給定門的數據：
+Given gate data:
 - w_a[0], w_a[1], ..., w_a[n-1]
 
-可以構造唯一的多項式 w_a(X)，使得：
+We can construct a unique polynomial w_a(X) such that:
 - w_a(ω^0) = w_a[0]
 - w_a(ω^1) = w_a[1]
 - ...
 - w_a(ω^(n-1)) = w_a[n-1]
 
-**練習 3.1**
-如果有3個門，w_a 的值分別是 [2, 5, 8]，且 ω³ = 1，那麼 w_a(X) 在 ω² 處的值是什麼？
+**Exercise 3.1**
+If there are 3 gates with w_a values [2, 5, 8], and ω³ = 1, what is the value of w_a(X) at ω²?
 
 <details>
-<summary>答案</summary>
+<summary>Answer</summary>
 
-w_a(ω²) = 8，因為這對應第3個門（索引2）的值。
+w_a(ω²) = 8, because this corresponds to the 3rd gate (index 2) value.
 
 </details>
 
 ---
 
-## 第二課：整合門約束
+## Lesson 2: Integrating Gate Constraints
 
-### 2.1 約束多項式的定義
+### 2.1 Definition of Constraint Polynomial
 
-定義**約束多項式** P(X)：
+Define **constraint polynomial** P(X):
 
 ```
 P(X) = q_L(X) * w_a(X) + q_R(X) * w_b(X) + q_O(X) * w_c(X) + q_M(X) * w_a(X) * w_b(X) + q_C(X)
 ```
 
-### 2.2 關鍵性質
+### 2.2 Key Property
 
-如果所有門約束都滿足，那麼：
-- P(ω^0) = 0 （第1門的約束）
-- P(ω^1) = 0 （第2門的約束）
+If all gate constraints are satisfied, then:
+- P(ω^0) = 0 (1st gate's constraint)
+- P(ω^1) = 0 (2nd gate's constraint)
 - ...
-- P(ω^(n-1)) = 0 （第n門的約束）
+- P(ω^(n-1)) = 0 (n-th gate's constraint)
 
-**核心洞察**：一個多項式 P(X) 編碼了所有門的約束！
+**Core Insight**: A single polynomial P(X) encodes all gate constraints!
 
-### 2.3 實例演示
+### 2.3 Example Demonstration
 
-**電路**：
-- 門1：a + b = c （加法門）
-- 門2：c × d = e （乘法門）
+**Circuit**:
+- Gate 1: a + b = c (addition gate)
+- Gate 2: c × d = e (multiplication gate)
 
-**多項式**：
-- w_a(X)：插值 [a, c]
-- w_b(X)：插值 [b, d]  
-- w_c(X)：插值 [c, e]
-- q_L(X)：插值 [1, 0] （門1啟用左輸入，門2不用）
-- q_R(X)：插值 [1, 0] （門1啟用右輸入，門2不用）
+**Polynomials**:
+- w_a(X): interpolates [a, c]
+- w_b(X): interpolates [b, d]  
+- w_c(X): interpolates [c, e]
+- q_L(X): interpolates [1, 0] (Gate 1 enables left input, Gate 2 doesn't)
+- q_R(X): interpolates [1, 0] (Gate 1 enables right input, Gate 2 doesn't)
 - ...
 
-**驗證**：
+**Verification**:
 - P(ω^0) = 1·a + 1·b + (-1)·c + 0·(a×b) + 0 = a + b - c = 0 ✓
 - P(ω^1) = 0·c + 0·d + (-1)·e + 1·(c×d) + 0 = cd - e = 0 ✓
 
 ---
 
-## 第三課：零化多項式 (Vanishing Polynomial)
+## Lesson 3: Vanishing Polynomial
 
-### 3.1 零化多項式的定義
+### 3.1 Definition of Vanishing Polynomial
 
-**零化多項式** Z_H(X) 是在所有門的座標上都為0的多項式：
+**Vanishing polynomial** Z_H(X) is a polynomial that equals 0 at all gate coordinates:
 
 ```
 Z_H(X) = (X - ω^0)(X - ω^1)...(X - ω^(n-1)) = X^n - 1
 ```
 
-### 3.2 為什麼叫「零化」？
+### 3.2 Why "Vanishing"?
 
-- 在每個門的位置 ω^i 上，Z_H(ω^i) = 0
-- 「零化」了所有我們關心的點
+- At each gate position ω^i, Z_H(ω^i) = 0
+- "Vanishes" at all points we care about
 
-### 3.3 整除性的關鍵洞察
+### 3.3 Key Insight about Divisibility
 
-**核心定理**：如果多項式 f(X) 在點 a 處的值為0，那麼 f(X) 可以被 (X-a) 整除。
+**Core Theorem**: If polynomial f(X) has value 0 at point a, then f(X) is divisible by (X-a).
 
-**推廣**：如果 P(X) 在 ω^0, ω^1, ..., ω^(n-1) 處都為0，那麼 P(X) 可以被 Z_H(X) 整除。
+**Extension**: If P(X) equals 0 at ω^0, ω^1, ..., ω^(n-1), then P(X) is divisible by Z_H(X).
 
-### 3.4 商多項式的引入
+### 3.4 Introduction of Quotient Polynomial
 
-如果所有約束都滿足，存在多項式 t(X) 使得：
+If all constraints are satisfied, there exists polynomial t(X) such that:
 
 ```
 P(X) = t(X) * Z_H(X)
 ```
 
-這個 t(X) 就是**商多項式 (Quotient Polynomial)**。
+This t(X) is the **quotient polynomial**.
 
 ---
 
-## 第四課：商多項式 (Quotient Polynomial)
+## Lesson 4: Quotient Polynomial
 
-### 4.1 商多項式的意義
+### 4.1 Meaning of Quotient Polynomial
 
-**數學意義**：t(X) = P(X) / Z_H(X)
+**Mathematical Meaning**: t(X) = P(X) / Z_H(X)
 
-**實際意義**：
-- 如果能計算出 t(X)，說明 P(X) 確實被 Z_H(X) 整除
-- 這證明了所有門約束都被滿足
+**Practical Meaning**:
+- If we can compute t(X), it shows P(X) is indeed divisible by Z_H(X)
+- This proves all gate constraints are satisfied
 
-### 4.2 次數分析
+### 4.2 Degree Analysis
 
-假設電路有 n 個門：
-- P(X) 的次數最多是 2n-1（因為有 w_a(X) × w_b(X) 項）
-- Z_H(X) 的次數是 n
-- 所以 t(X) 的次數最多是 n-1
+Assume the circuit has n gates:
+- P(X) has degree at most 2n-1 (due to w_a(X) × w_b(X) terms)
+- Z_H(X) has degree n
+- So t(X) has degree at most n-1
 
-### 4.3 Prover 的任務
+### 4.3 Prover's Task
 
-Prover 需要：
-1. 計算所有線路多項式 w_a(X), w_b(X), w_c(X)
-2. 構造約束多項式 P(X)
-3. 計算商多項式 t(X) = P(X) / Z_H(X)
-4. 證明 P(X) = t(X) × Z_H(X)
+The Prover needs to:
+1. Compute all wire polynomials w_a(X), w_b(X), w_c(X)
+2. Construct constraint polynomial P(X)
+3. Compute quotient polynomial t(X) = P(X) / Z_H(X)
+4. Prove P(X) = t(X) × Z_H(X)
 
-### 4.4 高效計算技巧
+### 4.4 Efficient Computation Techniques
 
-**多項式長除法**：
-- 直接計算會很慢
-- 使用 FFT 可以加速到 O(n log n)
+**Polynomial Long Division**:
+- Direct computation would be slow
+- Using FFT can accelerate to O(n log n)
 
-**分段計算**：
-- 將 t(X) 分成幾個低次多項式
-- 分別對每部分進行承諾
+**Segmented Computation**:
+- Split t(X) into several low-degree polynomials
+- Commit to each part separately
 
 ---
 
-## 第五課：整合置換約束
+## Lesson 5: Integrating Permutation Constraints
 
-### 5.1 置換約束的多項式表示
+### 5.1 Polynomial Representation of Permutation Constraints
 
-類似地，第二模組的置換約束也需要轉化為多項式形式。
+Similarly, the permutation arguments from Module 2 also need to be transformed into polynomial form.
 
-**置換多項式** Z_perm(X) 滿足：
+**Permutation polynomial** Z_perm(X) satisfies:
 
 ```
 L_1(X) * (Z_perm(X) - 1) = 0
 ```
 
-其中 L_1(X) 是拉格朗日基多項式，在 ω^0 處為1，其他地方為0。
+Where L_1(X) is a Lagrange basis polynomial that equals 1 at ω^0 and 0 elsewhere.
 
-### 5.2 置換的遞推關係
+### 5.2 Recurrence Relation for Permutation
 
-對於 i = 0, 1, ..., n-2：
+For i = 0, 1, ..., n-2:
 
 ```
 Z_perm(ω^(i+1)) * denominator(ω^i) = Z_perm(ω^i) * numerator(ω^i)
 ```
 
-這個關係也需要在多項式層面表達。
+This relation also needs to be expressed at the polynomial level.
 
-### 5.3 統一的約束系統
+### 5.3 Unified Constraint System
 
-最終，PLONK 系統有兩大類約束：
-1. **門約束**：P_gate(X) = t_gate(X) × Z_H(X)
-2. **置換約束**：P_perm(X) = t_perm(X) × Z_H(X)
+Finally, the PLONK system has two major types of constraints:
+1. **Gate constraints**: P_gate(X) = t_gate(X) × Z_H(X)
+2. **Permutation constraints**: P_perm(X) = t_perm(X) × Z_H(X)
 
 ---
 
-## 第六課：完整的多項式恆等式
+## Lesson 6: Complete Polynomial Identity
 
-### 6.1 約束的線性組合
+### 6.1 Linear Combination of Constraints
 
-使用隨機挑戰 α，將所有約束組合：
+Using random challenge α, combine all constraints:
 
 ```
 P_total(X) = P_gate(X) + α * P_perm(X)
 ```
 
-相應地：
+Correspondingly:
 
 ```
 t_total(X) = t_gate(X) + α * t_perm(X)
 ```
 
-### 6.2 最終的恆等式
+### 6.2 Final Identity
 
-PLONK 的核心恆等式：
+PLONK's core identity:
 
 ```
 P_total(X) = t_total(X) * Z_H(X)
 ```
 
-### 6.3 驗證的策略
+### 6.3 Verification Strategy
 
-Verifier 只需要：
-1. 在隨機點 z 處評估兩邊
-2. 檢查 P_total(z) = t_total(z) × Z_H(z)
-3. 使用多項式承諾來確保評估的正確性
+The Verifier only needs to:
+1. Evaluate both sides at random point z
+2. Check P_total(z) = t_total(z) × Z_H(z)
+3. Use polynomial commitments to ensure evaluation correctness
 
 ---
 
-## 第七課：多項式次數的管理
+## Lesson 7: Managing Polynomial Degrees
 
-### 7.1 次數爆炸問題
+### 7.1 Degree Explosion Problem
 
-當電路複雜時，多項式的次數會很高：
-- 存儲和計算成本急劇增加
-- 需要更大的可信設置
+When circuits are complex, polynomial degrees can be very high:
+- Storage and computation costs increase dramatically
+- Requires larger trusted setup
 
-### 7.2 分割技巧
+### 7.2 Splitting Technique
 
-將高次的 t(X) 分割成多個低次多項式：
+Split high-degree t(X) into multiple low-degree polynomials:
 
 ```
 t(X) = t_lo(X) + X^n * t_mid(X) + X^(2n) * t_hi(X)
 ```
 
-每個部分的次數都小於 n。
+Each part has degree less than n.
 
-### 7.3 分別承諾
+### 7.3 Separate Commitments
 
-對 t_lo, t_mid, t_hi 分別進行多項式承諾，降低整體複雜度。
+Commit to t_lo, t_mid, t_hi separately, reducing overall complexity.
 
 ---
 
-## 模組總結
+## Module Summary
 
-通過本模組，我們實現了重要的「語言轉換」：
+Through this module, we achieved the important "language translation":
 
-1. **視角提升**：從離散數組到連續多項式
-2. **約束整合**：所有門約束被編碼進一個多項式
-3. **零化多項式**：提供整除性檢查的數學工具
-4. **商多項式**：證明約束滿足的核心對象
+1. **Perspective Elevation**: From discrete arrays to continuous polynomials
+2. **Constraint Integration**: All gate constraints encoded into one polynomial
+3. **Vanishing Polynomial**: Mathematical tool providing divisibility checks
+4. **Quotient Polynomial**: Core object proving constraint satisfaction
 
-### 核心洞察
+### Core Insights
 
-- 多項式是編碼複雜信息的強大工具
-- 整除性檢查將約束驗證轉化為代數問題
-- 隨機線性組合讓我們能同時處理多種約束
+- Polynomials are powerful tools for encoding complex information
+- Divisibility checks transform constraint verification into algebraic problems
+- Random linear combinations allow simultaneous handling of multiple constraint types
 
-## 自我檢驗
+## Self-Assessment
 
-在進入下一模組前，請確認您能夠：
-- [ ] 解釋從離散約束到多項式約束的轉換
-- [ ] 理解零化多項式的作用和性質
-- [ ] 描述商多項式的計算和意義
-- [ ] 分析多項式次數對系統性能的影響
+Before proceeding to the next module, confirm you can:
+- [ ] Explain the transformation from discrete constraints to polynomial constraints
+- [ ] Understand the role and properties of vanishing polynomials
+- [ ] Describe the computation and meaning of quotient polynomials
+- [ ] Analyze the impact of polynomial degrees on system performance
 
-## 下一步
+## Next Steps
 
-現在我們有了完整的數學框架，是時候看看 PLONK 協議是如何實際運行的。讓我們進入[第四模組：系統整合 - 完整的證明與驗證流程](../module_4_protocol/)！
+Now we have the complete mathematical framework, it's time to see how the PLONK protocol actually runs. Let's proceed to [Module 4: System Integration - Complete Proving and Verification Flow](../module_4_protocol/)!

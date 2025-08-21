@@ -1,256 +1,256 @@
-# 第二模組：連接電路 - 置換參數的魔法 (The Permutation Argument)
+# Module 2: Connecting Circuits - The Magic of Permutation Arguments (The Permutation Argument)
 
-## 模組目標
-理解 PLONK 如何解決「線路連接」這個核心問題。
+## Module Objective
+Understand how PLONK solves the core problem of "wire connections."
 
-## 心智模型
-整個電路是一張大的 Excel 表格，置換參數就是用來證明「A欄的第3格 = C欄的第8格」這樣的等式約束。
-
----
-
-## 第一課：問題的提出
-
-### 1.1 複製約束 (Copy Constraints) 的重要性
-
-在第一模組中，我們學會了設計單個門。但是要構建有意義的電路，我們需要將多個門「連接」起來。
-
-**核心問題**：如何證明一個門的輸出確實等於另一個門的輸入？
-
-### 1.2 具體例子：乘法電路
-
-假設我們要計算 `(a + b) × (c + d)`：
-
-```
-門1: w_a1 + w_b1 = w_c1    // 計算 a + b
-門2: w_a2 + w_b2 = w_c2    // 計算 c + d  
-門3: w_a3 × w_b3 = w_c3    // 計算最終乘法
-```
-
-**連接約束**：
-- 門1的輸出應該成為門3的左輸入：w_c1 = w_a3
-- 門2的輸出應該成為門3的右輸入：w_c2 = w_b3
-
-### 1.3 表格視角
-
-將電路視為一個表格：
-
-| 門 | w_a | w_b | w_c |
-|----|-----|-----|-----|
-| 1  | a   | b   | ?   |
-| 2  | c   | d   | ?   |
-| 3  | ?   | ?   | result |
-
-**約束**：
-- 第1行的 w_c = 第3行的 w_a
-- 第2行的 w_c = 第3行的 w_b
-
-### 1.4 為什麼這很困難？
-
-**天真的方法**：為每個等式約束添加一個額外的門
-- 問題：會大幅增加電路大小
-- 更好的方法：一次性證明所有等式約束
+## Mental Model
+The entire circuit is a large Excel spreadsheet, and the permutation argument is used to prove equality constraints like "cell A3 = cell C8."
 
 ---
 
-## 第二課：置換參數的直覺
+## Lesson 1: Problem Statement
 
-### 2.1 核心思想
+### 1.1 Importance of Copy Constraints
 
-**問題轉化**：如何證明兩個數組是彼此的重新排列？
+In Module 1, we learned to design individual gates. But to build meaningful circuits, we need to "connect" multiple gates together.
 
-假設有兩個數組：
+**Core Problem**: How do we prove that one gate's output indeed equals another gate's input?
+
+### 1.2 Concrete Example: Multiplication Circuit
+
+Suppose we want to compute `(a + b) × (c + d)`:
+
+```
+Gate 1: w_a1 + w_b1 = w_c1    // Compute a + b
+Gate 2: w_a2 + w_b2 = w_c2    // Compute c + d  
+Gate 3: w_a3 × w_b3 = w_c3    // Compute final multiplication
+```
+
+**Connection Constraints**:
+- Gate 1's output should become Gate 3's left input: w_c1 = w_a3
+- Gate 2's output should become Gate 3's right input: w_c2 = w_b3
+
+### 1.3 Table Perspective
+
+View the circuit as a table:
+
+| Gate | w_a | w_b | w_c |
+|------|-----|-----|-----|
+| 1    | a   | b   | ?   |
+| 2    | c   | d   | ?   |
+| 3    | ?   | ?   | result |
+
+**Constraints**:
+- Row 1's w_c = Row 3's w_a
+- Row 2's w_c = Row 3's w_b
+
+### 1.4 Why Is This Difficult?
+
+**Naive Approach**: Add an extra gate for each equality constraint
+- Problem: Would dramatically increase circuit size
+- Better approach: Prove all equality constraints at once
+
+---
+
+## Lesson 2: Intuition of Permutation Arguments
+
+### 2.1 Core Idea
+
+**Problem Transformation**: How to prove two arrays are rearrangements of each other?
+
+Suppose we have two arrays:
 - A = [1, 3, 5, 2]
 - B = [3, 1, 2, 5]
 
-要證明 B 是 A 的置換（重新排列）。
+Want to prove B is a permutation (rearrangement) of A.
 
-### 2.2 隨機挑戰的威力
+### 2.2 The Power of Random Challenges
 
-**方法**：使用隨機數 γ，計算：
+**Method**: Use random number γ, compute:
 - P_A = (1 + γ) × (3 + γ) × (5 + γ) × (2 + γ)
 - P_B = (3 + γ) × (1 + γ) × (2 + γ) × (5 + γ)
 
-**關鍵性質**：
-- 如果 A 和 B 是彼此的置換，那麼 P_A = P_B
-- 如果 A 和 B 不是彼此的置換，那麼 P_A ≠ P_B（高概率）
+**Key Property**:
+- If A and B are permutations of each other, then P_A = P_B
+- If A and B are not permutations of each other, then P_A ≠ P_B (with high probability)
 
-### 2.3 為什麼這樣有效？
+### 2.3 Why Does This Work?
 
-**數學原理**：
-- 乘法具有交換律：順序不影響結果
-- 隨機性確保了「意外相等」的概率極低
+**Mathematical Principle**:
+- Multiplication has commutativity: order doesn't affect result
+- Randomness ensures "accidental equality" has extremely low probability
 
-**練習 2.1**
-設 γ = 2，計算上述例子中的 P_A 和 P_B。
+**Exercise 2.1**
+Let γ = 2, compute P_A and P_B for the above example.
 
 <details>
-<summary>答案</summary>
+<summary>Answer</summary>
 
 P_A = (1+2) × (3+2) × (5+2) × (2+2) = 3 × 5 × 7 × 4 = 420
 P_B = (3+2) × (1+2) × (2+2) × (5+2) = 5 × 3 × 4 × 7 = 420
 
-相等！證明了 B 是 A 的置換。
+Equal! This proves B is a permutation of A.
 
 </details>
 
 ---
 
-## 第三課：PLONK 的實現策略
+## Lesson 3: PLONK's Implementation Strategy
 
-### 3.1 線路的統一視角
+### 3.1 Unified View of Wires
 
-在 PLONK 中，所有線路被視為一個巨大的數組：
+In PLONK, all wires are viewed as one giant array:
 
 ```
 [w_a1, w_b1, w_c1, w_a2, w_b2, w_c2, ..., w_an, w_bn, w_cn]
 ```
 
-### 3.2 置換的定義
+### 3.2 Defining the Permutation
 
-定義一個置換 σ，描述哪些位置應該有相同的值：
+Define a permutation σ that describes which positions should have equal values:
 
-**例子**：
-- 位置 3 (第1門的 w_c) 和位置 7 (第3門的 w_a) 應該相等
-- 位置 6 (第2門的 w_c) 和位置 8 (第3門的 w_b) 應該相等
+**Example**:
+- Position 3 (Gate 1's w_c) and position 7 (Gate 3's w_a) should be equal
+- Position 6 (Gate 2's w_c) and position 8 (Gate 3's w_b) should be equal
 
-### 3.3 置換多項式 Z(X)
+### 3.3 Permutation Polynomial Z(X)
 
-PLONK 使用一個特殊的「置換多項式」Z(X) 來編碼所有的複製約束。
+PLONK uses a special "permutation polynomial" Z(X) to encode all copy constraints.
 
-**直觀理解**：
-- Z(X) 記錄了「累積的置換檢查」
-- 如果所有複製約束都滿足，Z(X) 會有特定的性質
+**Intuitive Understanding**:
+- Z(X) records "cumulative permutation checks"
+- If all copy constraints are satisfied, Z(X) has specific properties
 
-### 3.4 置換約束的形式
+### 3.4 Form of Permutation Constraints
 
-對於域的根 ω^i，置換約束要求：
+For roots of unity ω^i, the permutation constraint requires:
 
 ```
 Z(ω^(i+1)) = Z(ω^i) × (w_a(ω^i) + β·ω^i + γ) × (w_b(ω^i) + β·k₁·ω^i + γ) × (w_c(ω^i) + β·k₂·ω^i + γ) / ((w_a(ω^i) + β·σ_a(ω^i) + γ) × (w_b(ω^i) + β·σ_b(ω^i) + γ) × (w_c(ω^i) + β·σ_c(ω^i) + γ))
 ```
 
-其中：
-- β, γ 是隨機挑戰數
-- σ_a, σ_b, σ_c 編碼了置換信息
-- k₁, k₂ 是不同的生成元
+Where:
+- β, γ are random challenge numbers
+- σ_a, σ_b, σ_c encode permutation information
+- k₁, k₂ are different generators
 
 ---
 
-## 第四課：具體例子演練
+## Lesson 4: Concrete Example Walkthrough
 
-### 4.1 簡單的兩門電路
+### 4.1 Simple Two-Gate Circuit
 
-**電路**：
+**Circuit**:
 ```
-門1: a + b = temp
-門2: temp × c = result
+Gate 1: a + b = temp
+Gate 2: temp × c = result
 ```
 
-**線路表**：
-| 門 | w_a | w_b | w_c |
-|----|-----|-----|-----|
-| 1  | a   | b   | temp |
-| 2  | temp| c   | result |
+**Wire Table**:
+| Gate | w_a | w_b | w_c |
+|------|-----|-----|-----|
+| 1    | a   | b   | temp |
+| 2    | temp| c   | result |
 
-**複製約束**：
-- w_c[1] = w_a[2] （門1的輸出 = 門2的左輸入）
+**Copy Constraint**:
+- w_c[1] = w_a[2] (Gate 1's output = Gate 2's left input)
 
-### 4.2 置換的定義
+### 4.2 Defining the Permutation
 
-原始順序：[a, b, temp₁, temp₂, c, result]
-置換後：[a, b, temp₂, temp₁, c, result]
+Original order: [a, b, temp₁, temp₂, c, result]
+After permutation: [a, b, temp₂, temp₁, c, result]
 
-這表示位置3和位置4的值應該相等。
+This indicates positions 3 and 4 should have equal values.
 
-### 4.3 置換檢查
+### 4.3 Permutation Check
 
-使用隨機挑戰 β, γ：
+Using random challenges β, γ:
 
-**分子**（原始順序）：
+**Numerator** (original order):
 ```
 (a + β·ω⁰ + γ) × (b + β·ω¹ + γ) × (temp₁ + β·ω² + γ) × (temp₂ + β·ω³ + γ) × (c + β·ω⁴ + γ) × (result + β·ω⁵ + γ)
 ```
 
-**分母**（置換順序）：
+**Denominator** (permuted order):
 ```
 (a + β·ω⁰ + γ) × (b + β·ω¹ + γ) × (temp₂ + β·ω² + γ) × (temp₁ + β·ω³ + γ) × (c + β·ω⁴ + γ) × (result + β·ω⁵ + γ)
 ```
 
-如果複製約束滿足（temp₁ = temp₂），則分子 = 分母。
+If copy constraints are satisfied (temp₁ = temp₂), then numerator = denominator.
 
 ---
 
-## 第五課：深入理解置換多項式
+## Lesson 5: Deep Understanding of Permutation Polynomials
 
-### 5.1 累積乘積的思想
+### 5.1 Cumulative Product Idea
 
-置換多項式 Z(X) 是一個「累積乘積」：
+The permutation polynomial Z(X) is a "cumulative product":
 
 ```
 Z(ω⁰) = 1
-Z(ω¹) = Z(ω⁰) × (第一組分子/分母的比值)
-Z(ω²) = Z(ω¹) × (第二組分子/分母的比值)
+Z(ω¹) = Z(ω⁰) × (first group numerator/denominator ratio)
+Z(ω²) = Z(ω¹) × (second group numerator/denominator ratio)
 ...
 ```
 
-### 5.2 關鍵性質
+### 5.2 Key Properties
 
-如果所有複製約束都滿足：
-- Z(ω^n) = 1 （回到起始值）
-- Z(X) 在所有中間點都是良定義的
+If all copy constraints are satisfied:
+- Z(ω^n) = 1 (returns to starting value)
+- Z(X) is well-defined at all intermediate points
 
-### 5.3 驗證過程
+### 5.3 Verification Process
 
-Verifier 需要檢查：
-1. Z(ω⁰) = 1 （初始條件）
-2. Z(ω^n) = 1 （最終條件）
-3. 遞推關係在每一步都成立
-
----
-
-## 第六課：高效實現的技巧
-
-### 6.1 批處理驗證
-
-不是逐一檢查每個約束，而是：
-- 用隨機數 α 將所有約束線性組合
-- 一次性驗證組合後的約束
-
-### 6.2 預計算優化
-
-- σ_a, σ_b, σ_c 可以預先計算
-- 使用 FFT 加速多項式運算
-
-### 6.3 並行化
-
-- 置換檢查的不同部分可以並行計算
-- 利用現代 GPU 的並行計算能力
+The Verifier needs to check:
+1. Z(ω⁰) = 1 (initial condition)
+2. Z(ω^n) = 1 (final condition)
+3. Recurrence relation holds at each step
 
 ---
 
-## 模組總結
+## Lesson 6: Efficient Implementation Techniques
 
-通過本模組，我們深入理解了：
+### 6.1 Batch Verification
 
-1. **複製約束問題**：如何連接電路中的不同門
-2. **置換參數技術**：用隨機挑戰證明數組置換關係
-3. **PLONK的實現**：將所有線路視為統一數組
-4. **置換多項式**：累積乘積的優雅編碼方式
+Instead of checking each constraint individually:
+- Use random number α to linearly combine all constraints
+- Verify the combined constraint at once
 
-### 核心洞察
+### 6.2 Precomputation Optimization
 
-- 複製約束是構建複雜電路的關鍵
-- 隨機挑戰讓我們能夠高效地批量驗證約束
-- 置換參數將組合問題轉化為代數問題
+- σ_a, σ_b, σ_c can be precomputed
+- Use FFT to accelerate polynomial operations
 
-## 自我檢驗
+### 6.3 Parallelization
 
-在進入下一模組前，請確認您能夠：
-- [ ] 解釋什麼是複製約束及其重要性
-- [ ] 理解隨機挑戰如何用於置換驗證
-- [ ] 描述置換多項式的構造過程
-- [ ] 分析簡單電路的複製約束
+- Different parts of permutation checks can be computed in parallel
+- Utilize modern GPU parallel computing capabilities
 
-## 下一步
+---
 
-現在我們知道了如何設計門和連接門，但這些仍然是「離散」的約束。在下一模組中，我們將學習如何將整個電路轉換為「連續」的多項式表示。讓我們進入[第三模組：語言轉換 - 從電路到多項式](../module_3_polynomials/)！
+## Module Summary
+
+Through this module, we deeply understood:
+
+1. **Copy Constraint Problem**: How to connect different gates in circuits
+2. **Permutation Argument Technique**: Using random challenges to prove array permutation relationships
+3. **PLONK's Implementation**: Viewing all wires as a unified array
+4. **Permutation Polynomials**: Elegant encoding through cumulative products
+
+### Core Insights
+
+- Copy constraints are key to building complex circuits
+- Random challenges enable efficient batch verification of constraints
+- Permutation arguments transform combinatorial problems into algebraic problems
+
+## Self-Assessment
+
+Before proceeding to the next module, confirm you can:
+- [ ] Explain what copy constraints are and their importance
+- [ ] Understand how random challenges are used for permutation verification
+- [ ] Describe the construction process of permutation polynomials
+- [ ] Analyze copy constraints in simple circuits
+
+## Next Steps
+
+Now we know how to design gates and connect gates, but these are still "discrete" constraints. In the next module, we'll learn how to convert the entire circuit into a "continuous" polynomial representation. Let's proceed to [Module 3: Language Translation - From Circuits to Polynomials](../module_3_polynomials/)!

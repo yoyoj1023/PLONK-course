@@ -1,306 +1,306 @@
-# 第四模組：系統整合 - 完整的證明與驗證流程 (The Full Protocol)
+# Module 4: System Integration - Complete Proving and Verification Flow (The Full Protocol)
 
-## 模組目標
-將所有零件組裝起來，走完一遍完整的 PLONK 協議流程。
+## Module Objective
+Assemble all components and walk through the complete PLONK protocol flow.
 
-## 心智模型
-觀看一條完整的工廠流水線，從 Prover 輸入秘密開始，到 Verifier 輸出「接受/拒絕」結束。
-
----
-
-## 第一課：協議概覽
-
-### 1.1 參與者和輸入
-
-**Prover（證明者）**：
-- 擁有秘密輸入（私密見證）
-- 想要證明某個計算的正確性
-- 不想洩露秘密信息
-
-**Verifier（驗證者）**：
-- 只知道公開輸入和計算的結果
-- 想要確信 Prover 確實進行了正確的計算
-- 不想做太多計算工作
-
-### 1.2 協議的階段
-
-PLONK 協議包含 **4 輪交互**：
-
-1. **見證階段**：Prover 填入電路，承諾線路多項式
-2. **置換階段**：使用隨機挑戰，構造置換多項式
-3. **商多項式階段**：線性組合所有約束，計算商多項式
-4. **求值階段**：在隨機點評估所有多項式
-
-### 1.3 安全性來源
-
-- **隨機挑戰**：防止 Prover 預先準備假證明
-- **多項式承諾**：確保 Prover 不能在承諾後改變多項式
-- **Fiat-Shamir 變換**：讓協議非交互化
+## Mental Model
+Watch a complete factory assembly line, from Prover inputting secrets to Verifier outputting "accept/reject."
 
 ---
 
-## 第二課：第一輪 - 見證階段
+## Lesson 1: Protocol Overview
 
-### 2.1 Prover 的工作
+### 1.1 Participants and Inputs
 
-**步驟1**：執行計算
-- 將秘密輸入填入電路的每個門
-- 計算所有中間值和最終輸出
-- 得到完整的見證：w_a[0..n], w_b[0..n], w_c[0..n]
+**Prover**:
+- Has secret inputs (private witness)
+- Wants to prove correctness of some computation
+- Doesn't want to reveal secret information
 
-**步驟2**：構造線路多項式
-- 使用拉格朗日插值，構造：
-  - w_a(X)：通過點 (ω^i, w_a[i])
-  - w_b(X)：通過點 (ω^i, w_b[i])
-  - w_c(X)：通過點 (ω^i, w_c[i])
+**Verifier**:
+- Only knows public inputs and computation results
+- Wants to be convinced that Prover indeed performed correct computation
+- Doesn't want to do too much computational work
 
-**步驟3**：多項式承諾
-- 計算承諾：[w_a], [w_b], [w_c]
-- 發送給 Verifier
+### 1.2 Protocol Phases
 
-### 2.2 Verifier 的工作
+PLONK protocol consists of **4 rounds of interaction**:
 
-- 接收三個承諾
-- 生成隨機挑戰 β, γ（或使用 Fiat-Shamir）
-- 發送給 Prover
+1. **Witness Phase**: Prover fills circuit, commits to wire polynomials
+2. **Permutation Phase**: Using random challenges, construct permutation polynomial
+3. **Quotient Polynomial Phase**: Linearly combine all constraints, compute quotient polynomial
+4. **Evaluation Phase**: Evaluate all polynomials at random points
 
-### 2.3 實例演示
+### 1.3 Source of Security
 
-**電路**：計算 x² + 3x + 2
+- **Random Challenges**: Prevent Prover from preparing fake proofs in advance
+- **Polynomial Commitments**: Ensure Prover cannot change polynomials after commitment
+- **Fiat-Shamir Transform**: Make the protocol non-interactive
 
-**見證**（假設 x = 5）：
-- 門1：temp1 = x × x = 25
-- 門2：temp2 = 3 × x = 15  
-- 門3：temp3 = temp1 + temp2 = 40
-- 門4：result = temp3 + 2 = 42
+---
 
-**線路值**：
+## Lesson 2: Round 1 - Witness Phase
+
+### 2.1 Prover's Work
+
+**Step 1**: Execute computation
+- Fill secret inputs into each gate of the circuit
+- Compute all intermediate values and final outputs
+- Obtain complete witness: w_a[0..n], w_b[0..n], w_c[0..n]
+
+**Step 2**: Construct wire polynomials
+- Using Lagrange interpolation, construct:
+  - w_a(X): through points (ω^i, w_a[i])
+  - w_b(X): through points (ω^i, w_b[i])
+  - w_c(X): through points (ω^i, w_c[i])
+
+**Step 3**: Polynomial commitments
+- Compute commitments: [w_a], [w_b], [w_c]
+- Send to Verifier
+
+### 2.2 Verifier's Work
+
+- Receive three commitments
+- Generate random challenges β, γ (or use Fiat-Shamir)
+- Send to Prover
+
+### 2.3 Example Demonstration
+
+**Circuit**: Compute x² + 3x + 2
+
+**Witness** (assume x = 5):
+- Gate 1: temp1 = x × x = 25
+- Gate 2: temp2 = 3 × x = 15  
+- Gate 3: temp3 = temp1 + temp2 = 40
+- Gate 4: result = temp3 + 2 = 42
+
+**Wire values**:
 - w_a = [5, 3, 25, 40]
 - w_b = [5, 5, 15, 2]
 - w_c = [25, 15, 40, 42]
 
 ---
 
-## 第三課：第二輪 - 置換階段
+## Lesson 3: Round 2 - Permutation Phase
 
-### 3.1 隨機挑戰的使用
+### 3.1 Using Random Challenges
 
-Prover 收到 β, γ 後：
-- 構造置換多項式 Z_perm(X)
-- 使用 β, γ 確保不能預先計算
+After Prover receives β, γ:
+- Construct permutation polynomial Z_perm(X)
+- Use β, γ to ensure cannot precompute
 
-### 3.2 置換多項式的構造
+### 3.2 Construction of Permutation Polynomial
 
-**初始化**：Z_perm(ω^0) = 1
+**Initialization**: Z_perm(ω^0) = 1
 
-**遞推關係**（對 i = 0, 1, ..., n-2）：
+**Recurrence relation** (for i = 0, 1, ..., n-2):
 ```
 Z_perm(ω^(i+1)) = Z_perm(ω^i) × numerator(ω^i) / denominator(ω^i)
 ```
 
-其中：
+Where:
 ```
 numerator(ω^i) = (w_a(ω^i) + β·ω^i + γ) × (w_b(ω^i) + β·k₁·ω^i + γ) × (w_c(ω^i) + β·k₂·ω^i + γ)
 
 denominator(ω^i) = (w_a(ω^i) + β·σ_a(ω^i) + γ) × (w_b(ω^i) + β·σ_b(ω^i) + γ) × (w_c(ω^i) + β·σ_c(ω^i) + γ)
 ```
 
-### 3.3 承諾置換多項式
+### 3.3 Committing Permutation Polynomial
 
-- 計算承諾 [Z_perm]
-- 發送給 Verifier
+- Compute commitment [Z_perm]
+- Send to Verifier
 
-### 3.4 Verifier 的響應
+### 3.4 Verifier's Response
 
-- 生成隨機挑戰 α
-- 發送給 Prover
+- Generate random challenge α
+- Send to Prover
 
 ---
 
-## 第四課：第三輪 - 商多項式階段
+## Lesson 4: Round 3 - Quotient Polynomial Phase
 
-### 4.1 約束的線性組合
+### 4.1 Linear Combination of Constraints
 
-Prover 使用 α 組合所有約束：
+Prover uses α to combine all constraints:
 
-**門約束**：
+**Gate constraints**:
 ```
 P_gate(X) = q_L(X)w_a(X) + q_R(X)w_b(X) + q_O(X)w_c(X) + q_M(X)w_a(X)w_b(X) + q_C(X)
 ```
 
-**置換約束**：
+**Permutation constraints**:
 ```
 P_perm(X) = α·[(Z_perm(X)·numerator(X) - Z_perm(ωX)·denominator(X))] + α²·L_1(X)(Z_perm(X) - 1)
 ```
 
-**總約束**：
+**Total constraints**:
 ```
 P_total(X) = P_gate(X) + P_perm(X)
 ```
 
-### 4.2 商多項式計算
+### 4.2 Quotient Polynomial Computation
 
-計算商多項式：
+Compute quotient polynomial:
 ```
 t(X) = P_total(X) / Z_H(X)
 ```
 
-### 4.3 分割和承諾
+### 4.3 Splitting and Commitment
 
-將 t(X) 分割為低次部分：
+Split t(X) into low-degree parts:
 ```
 t(X) = t_lo(X) + X^n·t_mid(X) + X^(2n)·t_hi(X)
 ```
 
-計算承諾：[t_lo], [t_mid], [t_hi]
+Compute commitments: [t_lo], [t_mid], [t_hi]
 
-### 4.4 Verifier 的最後挑戰
+### 4.4 Verifier's Final Challenge
 
-- 生成隨機評估點 z
-- 發送給 Prover
+- Generate random evaluation point z
+- Send to Prover
 
 ---
 
-## 第五課：第四輪 - 求值階段
+## Lesson 5: Round 4 - Evaluation Phase
 
-### 5.1 多項式求值
+### 5.1 Polynomial Evaluations
 
-Prover 計算所有多項式在 z 和 zω 處的值：
+Prover computes all polynomial values at z and zω:
 
-**基本求值**：
+**Basic evaluations**:
 - a = w_a(z)
 - b = w_b(z)  
 - c = w_c(z)
 - z_perm = Z_perm(z)
 
-**移位求值**：
+**Shifted evaluations**:
 - z_perm_shifted = Z_perm(zω)
 
-**選擇子求值**：
+**Selector evaluations**:
 - q_L_eval = q_L(z)
 - q_R_eval = q_R(z)
-- 等等...
+- etc...
 
-**商多項式求值**：
+**Quotient polynomial evaluations**:
 - t_eval = t(z)
 
-### 5.2 發送評估值
+### 5.2 Sending Evaluation Values
 
-Prover 將所有評估值發送給 Verifier
+Prover sends all evaluation values to Verifier
 
-### 5.3 生成求值證明
+### 5.3 Generating Evaluation Proofs
 
-對於每個聲稱的求值，Prover 生成多項式承諾的「打開證明」
+For each claimed evaluation, Prover generates polynomial commitment "opening proofs"
 
 ---
 
-## 第六課：Verifier 的最終檢查
+## Lesson 6: Verifier's Final Checks
 
-### 6.1 門約束驗證
+### 6.1 Gate Constraint Verification
 
-Verifier 檢查：
+Verifier checks:
 ```
 q_L_eval × a + q_R_eval × b + q_O_eval × c + q_M_eval × a × b + q_C_eval = gate_constraint_eval
 ```
 
-### 6.2 置換約束驗證
+### 6.2 Permutation Constraint Verification
 
-檢查置換多項式的遞推關係：
+Check permutation polynomial's recurrence relation:
 ```
 z_perm_shifted × denominator_eval = z_perm × numerator_eval
 ```
 
-### 6.3 商多項式驗證
+### 6.3 Quotient Polynomial Verification
 
-檢查核心等式：
+Check core equation:
 ```
 gate_constraint_eval + α × permutation_constraint_eval = t_eval × Z_H_eval
 ```
 
-其中 Z_H_eval = z^n - 1
+where Z_H_eval = z^n - 1
 
-### 6.4 多項式承諾驗證
+### 6.4 Polynomial Commitment Verification
 
-驗證所有多項式求值的打開證明
-
----
-
-## 第七課：安全性分析
-
-### 7.1 完整性 (Completeness)
-
-如果 Prover 誠實且知道正確的見證：
-- 所有約束都會滿足
-- 商多項式計算正確
-- Verifier 總是接受
-
-### 7.2 可靠性 (Soundness)
-
-如果 Prover 試圖欺騙：
-- 偽造約束滿足的概率極小（約 1/|𝔽|）
-- 隨機挑戰防止預先計算攻擊
-- 多項式承諾的綁定性防止事後修改
-
-### 7.3 零知識 (Zero-Knowledge)
-
-- 所有發送的值都被隨機數「掩蔽」
-- Verifier 學不到見證的任何信息
-- 只能確信計算的正確性
-
-### 7.4 簡潔性 (Succinctness)
-
-- 證明大小：O(1) 個群元素
-- 驗證時間：O(1) 個配對運算
-- 獨立於電路大小
+Verify opening proofs for all polynomial evaluations
 
 ---
 
-## 第八課：實際考慮
+## Lesson 7: Security Analysis
 
-### 8.1 可信設置
+### 7.1 Completeness
 
-**結構化參考字符串 (SRS)**：
-- 包含 [1], [x], [x²], ..., [x^d] 的承諾
-- 需要一次性的可信設置儀式
-- 可以在多個電路間重用
+If Prover is honest and knows correct witness:
+- All constraints will be satisfied
+- Quotient polynomial computation is correct
+- Verifier always accepts
 
-### 8.2 預處理
+### 7.2 Soundness
 
-電路的選擇子多項式可以預先計算：
+If Prover tries to cheat:
+- Probability of forging constraint satisfaction is extremely small (about 1/|𝔽|)
+- Random challenges prevent precomputation attacks
+- Binding property of polynomial commitments prevents post-hoc modifications
+
+### 7.3 Zero-Knowledge
+
+- All sent values are "masked" by random numbers
+- Verifier learns nothing about the witness
+- Only can confirm correctness of computation
+
+### 7.4 Succinctness
+
+- Proof size: O(1) group elements
+- Verification time: O(1) pairing operations
+- Independent of circuit size
+
+---
+
+## Lesson 8: Practical Considerations
+
+### 8.1 Trusted Setup
+
+**Structured Reference String (SRS)**:
+- Contains commitments [1], [x], [x²], ..., [x^d]
+- Requires one-time trusted setup ceremony
+- Can be reused across multiple circuits
+
+### 8.2 Preprocessing
+
+Circuit selector polynomials can be precomputed:
 - q_L(X), q_R(X), q_O(X), q_M(X), q_C(X)
 - σ_a(X), σ_b(X), σ_c(X)
 
-### 8.3 批量驗證
+### 8.3 Batch Verification
 
-可以同時驗證多個證明：
-- 使用隨機線性組合
-- 分攤驗證成本
+Multiple proofs can be verified simultaneously:
+- Use random linear combination
+- Amortize verification costs
 
 ---
 
-## 模組總結
+## Module Summary
 
-通過本模組，我們完整地走過了 PLONK 協議：
+Through this module, we completely walked through the PLONK protocol:
 
-1. **4輪交互流程**：見證 → 置換 → 商多項式 → 求值
-2. **Prover 的任務**：承諾、計算、證明
-3. **Verifier 的檢查**：約束驗證、承諾驗證
-4. **安全性保證**：完整性、可靠性、零知識、簡潔性
+1. **4-round interaction flow**: witness → permutation → quotient polynomial → evaluation
+2. **Prover's tasks**: commit, compute, prove
+3. **Verifier's checks**: constraint verification, commitment verification
+4. **Security guarantees**: completeness, soundness, zero-knowledge, succinctness
 
-### 核心洞察
+### Core Insights
 
-- 隨機挑戰是協議安全性的關鍵
-- 多項式承諾實現了「綁定但隱藏」的特性
-- 分階段的設計使得複雜性可管理
+- Random challenges are key to protocol security
+- Polynomial commitments achieve "binding but hiding" properties
+- Phased design makes complexity manageable
 
-## 自我檢驗
+## Self-Assessment
 
-在進入下一模組前，請確認您能夠：
-- [ ] 描述 PLONK 協議的 4 個階段
-- [ ] 解釋隨機挑戰的作用
-- [ ] 理解 Verifier 的驗證邏輯
-- [ ] 分析協議的安全性質
+Before proceeding to the next module, confirm you can:
+- [ ] Describe the 4 phases of the PLONK protocol
+- [ ] Explain the role of random challenges
+- [ ] Understand Verifier's verification logic
+- [ ] Analyze the protocol's security properties
 
-## 下一步
+## Next Steps
 
-基本 PLONK 協議已經很強大，但還有進一步優化的空間。讓我們學習如何使用查找表來處理複雜運算：[第五模組：效能渦輪 - 使用查找表](../module_5_lookup/)！
+The basic PLONK protocol is already very powerful, but there's room for further optimization. Let's learn how to use lookup tables to handle complex operations: [Module 5: Performance Turbo - Using Lookup Tables](../module_5_lookup/)!
